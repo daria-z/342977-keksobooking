@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Дарья Закирова](https://up.htmlacademy.ru/javascript/13/user/342977).
-* Наставник: `Неизвестно`.
+* Наставник: [Лариса Клец](https://htmlacademy.ru/profile/id336227).
 
 ---
 
