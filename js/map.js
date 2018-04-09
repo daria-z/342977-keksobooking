@@ -34,6 +34,20 @@ var mixPhotos = function () {
   return photosArray;
 };
 
+var determineFlatType = function (flatParam) {
+  var flat;
+  if (flatParam === 'palace') {
+    flat = 'Дворец';
+  } else if (flatParam === 'flat') {
+    flat = 'Квартира';
+  } else if (flatParam === 'bungalo') {
+    flat = 'Бунгало';
+  } else if (flatParam === 'house') {
+    flat = 'Дом';
+  }
+  return flat;
+};
+
 var generateAd = function () { // функция для генерации одного объекта массива предложений
   var OBJECT_LOCATION_X = Math.floor((Math.random() * 2 + 1) * 300);
   var OBJECT_LOCATION_Y = Math.floor((Math.random() * 35 + 15) * 10);
@@ -93,7 +107,7 @@ var renderAd = function (ad) { // функция для генирации од�
   adElement.querySelector('.popup__title').textContent = ad.offer.title; // добавили заголовок из массива
   adElement.querySelector('.popup__text--address').textContent = ad.offer.address; // добавили адрес из массива
   adElement.querySelector('.popup__text--price').innerHTML = ad.offer.price + '&#x20bd;' + '<span>/ночь</span>';
-  adElement.querySelector('.popup__type').textContent = ad.offer.type; // добавили заголовок из массива !!! Квартира для flat, Бунгало для bungalo, Дом для house
+  adElement.querySelector('.popup__type').textContent = determineFlatType(ad.offer.type); // добавили заголовок из массива !!! Квартира для flat, Бунгало для bungalo, Дом для house
   adElement.querySelector('.popup__text--capacity').innerHTML = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
   adElement.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
   adElement.querySelector('.popup__features').textContent = ad.offer.features; // добавили заголовок из массива
