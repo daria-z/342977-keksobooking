@@ -98,11 +98,12 @@ var renderAd = function (ad) { // функция для генирации од�
   adElement.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
   adElement.querySelector('.popup__features').textContent = ad.offer.features; // добавили заголовок из массива
   adElement.querySelector('.popup__description').textContent = ad.offer.description; // добавили заголовок из массива
-  adElement.querySelector('.popup__photos').appendChild(adElement.querySelector('.popup__photo').cloneNode(true));
-  adElement.querySelector('.popup__photos').appendChild(adElement.querySelector('.popup__photo').cloneNode(true));
-  adElement.querySelector('.popup__photo:nth-child(1)').src = ad.offer.photos[0]; //  Каждая из строк массива photos должна записываться как src соответствующего изображения.
-  adElement.querySelector('.popup__photo:nth-child(2)').src = ad.offer.photos[1];
-  adElement.querySelector('.popup__photo:nth-child(3)').src = ad.offer.photos[2];
+  for (var i = 0; i < PLACE_PHOTOS.length - 1; i++) {
+    adElement.querySelector('.popup__photos').appendChild(adElement.querySelector('.popup__photo').cloneNode(true));
+  }
+  for (i = 0; i < PLACE_PHOTOS.length; i++) {
+    adElement.querySelector('.popup__photo:nth-child(' + (i + 1) + ')').src = ad.offer.photos[i];
+  }
   adElement.querySelector('.popup__avatar').src = ad.author.avatar; // Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
 
   return adElement;
