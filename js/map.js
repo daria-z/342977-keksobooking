@@ -7,21 +7,24 @@ var CHECKOUT_TIMES = CHECKIN_TIMES;
 var PLACE_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PLACE_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']; // как расположить стоки в произвольном порядке
 
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
 
 var map = document.querySelector('.map'); // нашли блок map
-var mapPins = document.querySelector('.map__pins');
+var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
 
-var adTemplate = document.querySelector('template') // находим шаблон и записываем в переменную
+var adTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
     .content // обращаемся к обертке
     .querySelector('.map__card'); // и к элементам внутри обертки
 
-var pinTemplate = document.querySelector('template') // находим шаблон и записываем в переменную
+var pinTemplate = document.querySelector('template') // находим шаблон пина и записываем в переменную
     .content // обращаемся к обертке
     .querySelector('.map__pin'); // и к элементам внутри обертки
 
+var allPins = document.createElement('pins'); // создали переменную в которую сложим сгенерированные пины
+var fragmentPins = document.createDocumentFragment(); // создали фрагмент для вставки всех пинов за раз
 
 var similarAds = []; // массив похожих предложений
-
 
 var getRandomNumber = function (lengthOfArray) {
   return Math.floor(Math.random() * lengthOfArray);
@@ -109,7 +112,7 @@ var renderAd = function (ad) { // функция для генирации од�
   adElement.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
   adElement.querySelector('.popup__features').textContent = ad.offer.features; // добавили заголовок из массива
   adElement.querySelector('.popup__description').textContent = ad.offer.description; // добавили заголовок из массива
-  for (var i = 0; i < PLACE_PHOTOS.length - 1; i++) {
+  for (var i = 0; i < ad.offer.photos.length - 1; i++) {
     adElement.querySelector('.popup__photos').appendChild(adElement.querySelector('.popup__photo').cloneNode(true));
   }
   for (i = 0; i < PLACE_PHOTOS.length; i++) {
@@ -123,29 +126,29 @@ var renderAd = function (ad) { // функция для генирации од�
 var renderPin = function (pin) { // функция для генирации одного пина
   var pinElement = pinTemplate.cloneNode(true); // копируем теиплейт
 
-  pinElement.style = 'left: ' + (pin.location.x + 25) + 'px;' + 'top: ' + (pin.location.y + 70) + 'px;';
+  pinElement.style = 'left: ' + (pin.location.x - PIN_WIDTH / 2) + 'px;' + 'top: ' + (pin.location.y - PIN_HEIGHT) + 'px;';
   pinElement.querySelector('img').src = pin.author.avatar;
   pinElement.querySelector('img').alt = pin.offer.title;
 
   return pinElement;
 };
 
+var insertAd = function () {
+  map.insertBefore(renderAd(similarAds[0]), document.querySelector('.map__filters-container')); // добавляем одно объявление перед блоком фильтров
+};
+
+var insertPins = function () {
+  for (var i = 0; i < similarAds.length; i++) { // проходимся по всему массиву
+    fragmentPins.appendChild(renderPin(similarAds[i])); // добавляем пин во фрагмент
+  }
+
+  allPins.appendChild(fragmentPins); // записываем пины во фрагмент
+  mapPins.appendChild(allPins); // вставляем фрагмент пинов в html
+};
+
 map.classList.remove('map--faded');
-
-var oneAd = document.createElement('ad-card'); // создали переменную в которую сложим сгенерированные элементы
-var onePin = document.createElement('pin'); // создали переменную в которую сложим сгенерированные элементы
-
-var fragment = document.createDocumentFragment(); // создали фрагмент для вставки
-var fragmentPins = document.createDocumentFragment(); // создали фрагмент для вставки
 
 generateSimilarAds(); // сгенерировали 8 похожишь объявлений
 
-for (var i = 0; i < similarAds.length; i++) { // проходимся по всему массиву
-  fragment.appendChild(renderAd(similarAds[i])); // добавляем объявление во фрагмент
-  fragmentPins.appendChild(renderPin(similarAds[i])); // добавляем пин во фрагмент
-}
-
-map.insertBefore(oneAd, document.querySelector('.map__filters-container'));
-mapPins.appendChild(onePin);
-oneAd.appendChild(fragment);
-onePin.appendChild(fragmentPins);
+insertAd(); // сгенерировани и добавили объявление
+insertPins(); // сгененрировали и добавили пины
