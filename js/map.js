@@ -65,6 +65,12 @@ var determineFlatType = function (flatParam) { // определяет пара�
   return flat;
 };
 
+function removeAllChildren(parent) { // удаляет всех детей parent
+  while (parent.lastChild) {
+    parent.removeChild(parent.lastChild);
+  }
+}
+
 var generateAd = function () { // функция для генерации одного объекта массива предложений
   var OBJECT_LOCATION_X = Math.floor((Math.random() * 2 + 1) * 300);
   var OBJECT_LOCATION_Y = Math.floor((Math.random() * 35 + 15) * 10);
@@ -103,19 +109,25 @@ var generateSimilarAds = function () { // функция для генераци
 
 var renderAd = function (ad) { // функция для генирации одного объявления в темплейт на осове данных из массива
   var adElement = adTemplate.cloneNode(true); // копируем теиплейт
+  var featuresList = adElement.querySelector('.popup__features'); // список фич в темплейте
 
   adElement.querySelector('.popup__title').textContent = ad.offer.title; // добавили заголовок из массива
   adElement.querySelector('.popup__text--address').textContent = ad.offer.address; // добавили адрес из массива
   adElement.querySelector('.popup__text--price').innerHTML = ad.offer.price + '&#x20bd;' + '<span>/ночь</span>';
   adElement.querySelector('.popup__type').textContent = determineFlatType(ad.offer.type); // добавили заголовок из массива !!! Квартира для flat, Бунгало для bungalo, Дом для house
-  adElement.querySelector('.popup__text--capacity').innerHTML = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
-  adElement.querySelector('.popup__text--time').innerHTML = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
-  adElement.querySelector('.popup__features').textContent = ad.offer.features; // добавили заголовок из массива
+  adElement.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+  adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
+  removeAllChildren(featuresList); // удаляем дочерние элементы списка фич из темплейта
+  for (var j = 0; j < ad.offer.features.length; j++) { // создаем и добавляем нужное количество фич в список
+    var featuresListItem = document.createElement('li');
+    featuresListItem.className = 'popup__feature popup__feature--' + ad.offer.features[j];
+    featuresList.appendChild(featuresListItem);
+  }
   adElement.querySelector('.popup__description').textContent = ad.offer.description; // добавили заголовок из массива
-  for (var i = 0; i < ad.offer.photos.length - 1; i++) {
+  for (var i = 0; i < ad.offer.photos.length - 1; i++) { // увеличили количество img до нужного числа
     adElement.querySelector('.popup__photos').appendChild(adElement.querySelector('.popup__photo').cloneNode(true));
   }
-  for (i = 0; i < PLACE_PHOTOS.length; i++) {
+  for (i = 0; i < ad.offer.photos.length; i++) { // отдали img нужные адреса
     adElement.querySelector('.popup__photo:nth-child(' + (i + 1) + ')').src = ad.offer.photos[i];
   }
   adElement.querySelector('.popup__avatar').src = ad.author.avatar; // Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
