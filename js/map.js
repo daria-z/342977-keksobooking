@@ -7,9 +7,10 @@
 // var PLACE_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 // var PLACE_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']; // как расположить стоки в произвольном порядке
 
-// var PIN_WIDTH = 50;
-// var PIN_HEIGHT = 70;
-//
+var PIN_BUTTON_SIZE = 65;
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
+
 var map = document.querySelector('.map'); // нашли блок map
 var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
 //
@@ -171,6 +172,10 @@ var mapPins = document.querySelector('.map__pins'); // нашли блок map__
 // insertPins(); // сгененрировали и добавили пины
 var userForm = document.querySelector('.ad-form');
 var formFieldset = userForm.querySelectorAll('fieldset');
+var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
+var addressField = document.getElementById('address');
+var pinButtonLocation = (parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2);
+var pinLocation = (parseInt(mainPin.style.left, 10) - PIN_WIDTH / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_HEIGHT);
 
 var addFormDisabled = function () {
   for (var i = 0; i < formFieldset.length; i++) {
@@ -190,12 +195,18 @@ var cancelInactiveState = function () {
   removeFormDisabled();
 };
 
+var addTextInField = function (where, what) {
+  where.value = what;
+};
+
+addTextInField(addressField, pinButtonLocation);
 addFormDisabled();
 
-var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
 mainPin.addEventListener('mouseup', function () {
   cancelInactiveState();
+  addTextInField(addressField, pinLocation);
 });
+
 
 // Неактивное состояние. При первом открытии, страница находится в неактивном состоянии: блок с картой находится в неактивном состоянии, форма подачи заявления заблокирована.
 //
