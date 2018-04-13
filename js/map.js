@@ -7,12 +7,19 @@ var CHECKOUT_TIMES = CHECKIN_TIMES;
 var PLACE_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var PLACE_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']; // как расположить стоки в произвольном порядке
 
+var PIN_BUTTON_SIZE = 65;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 
-var map = document.querySelector('.map'); // нашли блок map
+// ПЕРЕМЕННЫЕ ДЛЯ КОНКРЕТНЫХ DOM-ОБЪЕКТОВ
+var tokyoMap = document.querySelector('.map'); // нашли блок map
 var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
+var userForm = document.querySelector('.ad-form');
+var formFieldset = userForm.querySelectorAll('fieldset');
+var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
+var addressField = document.getElementById('address');
 
+// ТЕМПЛЕЙТЫ
 var adTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
     .content // обращаемся к обертке
     .querySelector('.map__card'); // и к элементам внутри обертки
@@ -21,15 +28,34 @@ var pinTemplate = document.querySelector('template') // находим шабл�
     .content // обращаемся к обертке
     .querySelector('.map__pin'); // и к элементам внутри обертки
 
+// НОВЫЕ, СГЕНЕРИРОВАННЫЕ ОБЪЕКТЫ
 var allPins = document.createElement('pins'); // создали переменную в которую сложим сгенерированные пины
 var fragmentPins = document.createDocumentFragment(); // создали фрагмент для вставки всех пинов за раз
 
+// ПОДСЧЕТ АДРЕСА МЕТКИ
+var pinButtonLocation = (parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2);
+var pinLocation = (parseInt(mainPin.style.left, 10) - PIN_WIDTH / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_HEIGHT);
+
+// МАССИВЫ
 var similarAds = []; // массив похожих предложений
 
-var getRandomNumber = function (lengthOfArray) {
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+var getRandomNumber = function (lengthOfArray) { // выбор случайного числа из массива
   return Math.floor(Math.random() * lengthOfArray);
-}; // выбор случайного числа из массива
+};
 
+function removeAllChildren(parent) { // удаляет всех детей parent
+  while (parent.lastChild) {
+    parent.removeChild(parent.lastChild);
+  }
+}
+
+var pickUpNumeEnding = function (number, titles) { // функция для генерации окончаний числительных
+  var cases = [2, 0, 1, 1, 1, 2];
+  return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+};
+
+// ФУНКЦИИ ДЛЯ РАБОТЫ С ТЕМПЛЕЙТОМ -- вспомогательные
 var getFeatures = function () {
   var featuresArray = []; // массив актуальных фич
   var featuresQuantity = getRandomNumber(PLACE_FEATURES.length);
@@ -65,12 +91,7 @@ var determineFlatType = function (flatParam) { // определяет пара�
   return flat;
 };
 
-function removeAllChildren(parent) { // удаляет всех детей parent
-  while (parent.lastChild) {
-    parent.removeChild(parent.lastChild);
-  }
-}
-
+// ФУНКЦИИ ДЛЯ РАБОТЫ С ТЕМПЛЕЙТОМ -- осовные
 var generateAd = function () { // функция для генерации одного объекта массива предложений
   var OBJECT_LOCATION_X = Math.floor((Math.random() * 2 + 1) * 300);
   var OBJECT_LOCATION_Y = Math.floor((Math.random() * 35 + 15) * 10);
@@ -94,6 +115,10 @@ var generateAd = function () { // функция для генерации од�
     'location': {
       'x': OBJECT_LOCATION_X,
       'y': OBJECT_LOCATION_Y
+    },
+    'id': {
+      'ad': '',
+      'pin': ''
     }
   };
 
@@ -101,8 +126,10 @@ var generateAd = function () { // функция для генерации од�
 };
 
 var generateSimilarAds = function () { // функция для генерации восьми похожих объявлений
-  for (var j = 0; j <= 7; j++) { // цикл для генерации массива актуальных предложений
+  for (var j = 0; j < 8; j++) {
     var actualAd = generateAd(); // генирируем актуальный объект
+    actualAd.id.ad = '0' + j;
+    actualAd.id.pin = j;
     similarAds.push(actualAd); // Записываем актуальный объект в массив
   }
 };
@@ -110,12 +137,15 @@ var generateSimilarAds = function () { // функция для генераци
 var renderAd = function (ad) { // функция для генирации одного объявления в темплейт на осове данных из массива
   var adElement = adTemplate.cloneNode(true); // копируем теиплейт
   var featuresList = adElement.querySelector('.popup__features'); // список фич в темплейте
+  var roomsNumeral = pickUpNumeEnding(ad.offer.rooms, ['комната', 'комнаты', 'комнат']);
+  var guestsNumeral = pickUpNumeEnding(ad.offer.guests, ['гостя', 'гостей', 'гостей']);
 
+  adElement.id = ad.id.ad;
   adElement.querySelector('.popup__title').textContent = ad.offer.title; // добавили заголовок из массива
   adElement.querySelector('.popup__text--address').textContent = ad.offer.address; // добавили адрес из массива
-  adElement.querySelector('.popup__text--price').innerHTML = ad.offer.price + '&#x20bd;' + '<span>/ночь</span>';
+  adElement.querySelector('.popup__text--price').textContent = ad.offer.price + '\u20bd/ночь';
   adElement.querySelector('.popup__type').textContent = determineFlatType(ad.offer.type); // добавили заголовок из массива !!! Квартира для flat, Бунгало для bungalo, Дом для house
-  adElement.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+  adElement.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' ' + roomsNumeral + ' ' + 'для ' + ad.offer.guests + ' ' + guestsNumeral;
   adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
   removeAllChildren(featuresList); // удаляем дочерние элементы списка фич из темплейта
   for (var j = 0; j < ad.offer.features.length; j++) { // создаем и добавляем нужное количество фич в список
@@ -138,29 +168,64 @@ var renderAd = function (ad) { // функция для генирации од�
 var renderPin = function (pin) { // функция для генирации одного пина
   var pinElement = pinTemplate.cloneNode(true); // копируем теиплейт
 
+  pinElement.id = pin.id.pin;
   pinElement.style = 'left: ' + (pin.location.x - PIN_WIDTH / 2) + 'px;' + 'top: ' + (pin.location.y - PIN_HEIGHT) + 'px;';
   pinElement.querySelector('img').src = pin.author.avatar;
   pinElement.querySelector('img').alt = pin.offer.title;
-
+  pinElement.addEventListener('click', function () { // функция для генерации слушателя для каждого пина
+    var actualAd = tokyoMap.querySelector('article');
+    if (actualAd === null) {
+      insertAd(pin.id.pin);
+    } else if (actualAd !== null) {
+      tokyoMap.removeChild(actualAd);
+      insertAd(pin.id.pin);
+    }
+  });
   return pinElement;
 };
 
-var insertAd = function () {
-  map.insertBefore(renderAd(similarAds[0]), document.querySelector('.map__filters-container')); // добавляем одно объявление перед блоком фильтров
+var insertAd = function (idNum) { // добавляем одно объявление перед блоком фильтров
+  tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
 };
 
-var insertPins = function () {
+var insertPins = function () { // добавляем все пины
   for (var i = 0; i < similarAds.length; i++) { // проходимся по всему массиву
     fragmentPins.appendChild(renderPin(similarAds[i])); // добавляем пин во фрагмент
   }
-
   allPins.appendChild(fragmentPins); // записываем пины во фрагмент
   mapPins.appendChild(allPins); // вставляем фрагмент пинов в html
 };
 
-map.classList.remove('map--faded');
+// ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
+var addTextInField = function (where, what) { // добавление текста в поле
+  where.value = what;
+};
+
+var addFormDisabled = function () { // добавляет неактивное состояние формы
+  for (var i = 0; i < formFieldset.length; i++) {
+    formFieldset[i].disabled = 'true';
+  }
+};
+
+var removeFormDisabled = function () { // отменяет неактивное состояние формы
+  for (var i = 0; i < formFieldset.length; i++) {
+    formFieldset[i].disabled = '';
+  }
+  userForm.classList.remove('ad-form--disabled');
+};
+
+// ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
+var cancelPageInactive = function () { // отменяет неактивное состояние страницы
+  tokyoMap.classList.remove('map--faded');
+  removeFormDisabled();
+};
 
 generateSimilarAds(); // сгенерировали 8 похожишь объявлений
+addTextInField(addressField, pinButtonLocation); // добавили адрес в форму
+addFormDisabled(); // заблокировали форму
 
-insertAd(); // сгенерировани и добавили объявление
-insertPins(); // сгененрировали и добавили пины
+mainPin.addEventListener('mouseup', function () { // перевели все в активное состояние по опусканию пина
+  cancelPageInactive(); // разблокировали форму
+  addTextInField(addressField, pinLocation); // добавили адрес в форму
+  insertPins(); // сгененрировали и добавили пины
+});
