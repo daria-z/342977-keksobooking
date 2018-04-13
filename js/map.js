@@ -11,9 +11,15 @@ var PIN_BUTTON_SIZE = 65;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 
+// ПЕРЕМЕННЫЕ ДЛЯ КОНКРЕТНЫХ DOM-ОБЪЕКТОВ
 var tokyoMap = document.querySelector('.map'); // нашли блок map
 var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
+var userForm = document.querySelector('.ad-form');
+var formFieldset = userForm.querySelectorAll('fieldset');
+var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
+var addressField = document.getElementById('address');
 
+// ТЕМПЛЕЙТЫ
 var adTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
     .content // обращаемся к обертке
     .querySelector('.map__card'); // и к элементам внутри обертки
@@ -22,15 +28,34 @@ var pinTemplate = document.querySelector('template') // находим шабл�
     .content // обращаемся к обертке
     .querySelector('.map__pin'); // и к элементам внутри обертки
 
+// НОВЫЕ, СГЕНЕРИРОВАННЫЕ ОБЪЕКТЫ
 var allPins = document.createElement('pins'); // создали переменную в которую сложим сгенерированные пины
 var fragmentPins = document.createDocumentFragment(); // создали фрагмент для вставки всех пинов за раз
 
+// ПОДСЧЕТ АДРЕСА МЕТКИ
+var pinButtonLocation = (parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2);
+var pinLocation = (parseInt(mainPin.style.left, 10) - PIN_WIDTH / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_HEIGHT);
+
+// МАССИВЫ
 var similarAds = []; // массив похожих предложений
 
-var getRandomNumber = function (lengthOfArray) {
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+var getRandomNumber = function (lengthOfArray) { // выбор случайного числа из массива
   return Math.floor(Math.random() * lengthOfArray);
-}; // выбор случайного числа из массива
+};
 
+function removeAllChildren(parent) { // удаляет всех детей parent
+  while (parent.lastChild) {
+    parent.removeChild(parent.lastChild);
+  }
+}
+
+var pickUpNumeEnding = function (number, titles) { // функция для генерации окончаний числительных
+  var cases = [2, 0, 1, 1, 1, 2];
+  return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+};
+
+// ФУНКЦИИ ДЛЯ РАБОТЫ С ТЕМПЛЕЙТОМ -- вспомогательные
 var getFeatures = function () {
   var featuresArray = []; // массив актуальных фич
   var featuresQuantity = getRandomNumber(PLACE_FEATURES.length);
@@ -66,19 +91,7 @@ var determineFlatType = function (flatParam) { // определяет пара�
   return flat;
 };
 
-function removeAllChildren(parent) { // удаляет всех детей parent
-  while (parent.lastChild) {
-    parent.removeChild(parent.lastChild);
-  }
-}
-// var generateIdNumber = function (quantity) {
-//   for (var j = 0; j < quantity; j++) {
-//     var idNumber = j;
-//   }
-//   return idNumber;
-// };
-
-
+// ФУНКЦИИ ДЛЯ РАБОТЫ С ТЕМПЛЕЙТОМ -- осовные
 var generateAd = function () { // функция для генерации одного объекта массива предложений
   var OBJECT_LOCATION_X = Math.floor((Math.random() * 2 + 1) * 300);
   var OBJECT_LOCATION_Y = Math.floor((Math.random() * 35 + 15) * 10);
@@ -113,17 +126,12 @@ var generateAd = function () { // функция для генерации од�
 };
 
 var generateSimilarAds = function () { // функция для генерации восьми похожих объявлений
-  for (var j = 0; j < 8; j++) { // цикл для генерации массива актуальных предложений
+  for (var j = 0; j < 8; j++) {
     var actualAd = generateAd(); // генирируем актуальный объект
     actualAd.id.ad = '0' + j;
     actualAd.id.pin = j;
     similarAds.push(actualAd); // Записываем актуальный объект в массив
   }
-};
-
-var pickUpNumeEnding = function (number, titles) { // функция для генерации окончаний числительных
-  var cases = [2, 0, 1, 1, 1, 2];
-  return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
 };
 
 var renderAd = function (ad) { // функция для генирации одного объявления в темплейт на осове данных из массива
@@ -164,31 +172,34 @@ var renderPin = function (pin) { // функция для генирации о�
   pinElement.style = 'left: ' + (pin.location.x - PIN_WIDTH / 2) + 'px;' + 'top: ' + (pin.location.y - PIN_HEIGHT) + 'px;';
   pinElement.querySelector('img').src = pin.author.avatar;
   pinElement.querySelector('img').alt = pin.offer.title;
-
+  pinElement.addEventListener('click', function () { // функция для генерации слушателя для каждого пина
+    var actualAd = tokyoMap.querySelector('article');
+    if (actualAd === null) {
+      insertAd(pin.id.pin);
+    } else if (actualAd !== null) {
+      tokyoMap.removeChild(actualAd);
+      insertAd(pin.id.pin);
+    }
+  });
   return pinElement;
 };
 
-var insertAd = function (idNum) {
-  tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container')); // добавляем одно объявление перед блоком фильтров
+var insertAd = function (idNum) { // добавляем одно объявление перед блоком фильтров
+  tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
 };
 
-var insertPins = function () {
+var insertPins = function () { // добавляем все пины
   for (var i = 0; i < similarAds.length; i++) { // проходимся по всему массиву
     fragmentPins.appendChild(renderPin(similarAds[i])); // добавляем пин во фрагмент
   }
-
   allPins.appendChild(fragmentPins); // записываем пины во фрагмент
   mapPins.appendChild(allPins); // вставляем фрагмент пинов в html
 };
 
-generateSimilarAds(); // сгенерировали 8 похожишь объявлений
-
-var userForm = document.querySelector('.ad-form');
-var formFieldset = userForm.querySelectorAll('fieldset');
-var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
-var addressField = document.getElementById('address');
-var pinButtonLocation = (parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2);
-var pinLocation = (parseInt(mainPin.style.left, 10) - PIN_WIDTH / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_HEIGHT);
+// ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
+var addTextInField = function (where, what) { // добавление текста в поле
+  where.value = what;
+};
 
 var addFormDisabled = function () { // добавляет неактивное состояние формы
   for (var i = 0; i < formFieldset.length; i++) {
@@ -203,112 +214,18 @@ var removeFormDisabled = function () { // отменяет неактивное 
   userForm.classList.remove('ad-form--disabled');
 };
 
-var cancelInactiveState = function () { // отменяет неактивное состояние страницы
+// ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
+var cancelPageInactive = function () { // отменяет неактивное состояние страницы
   tokyoMap.classList.remove('map--faded');
   removeFormDisabled();
 };
 
-var addTextInField = function (where, what) { // добавление текста в поле
-  where.value = what;
-};
-
-addTextInField(addressField, pinButtonLocation); // добавили текас в поле адреса
+generateSimilarAds(); // сгенерировали 8 похожишь объявлений
+addTextInField(addressField, pinButtonLocation); // добавили адрес в форму
 addFormDisabled(); // заблокировали форму
 
-var clickPin = function () { // создание блока объявления по клику на определенный пин
-  var Pin0 = document.getElementById('0');
-  var Pin1 = document.getElementById('1');
-  var Pin2 = document.getElementById('2');
-  var Pin3 = document.getElementById('3');
-  var Pin4 = document.getElementById('4');
-  var Pin5 = document.getElementById('5');
-  var Pin6 = document.getElementById('6');
-  var Pin7 = document.getElementById('7');
-  Pin0.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(0);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(0);
-    }
-  });
-  Pin1.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(1);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(1);
-    }
-  });
-  Pin2.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(2);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(2);
-    }
-  });
-  Pin3.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(3);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(3);
-    }
-  });
-  Pin4.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(4);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(4);
-    }
-  });
-  Pin5.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(5);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(5);
-    }
-  });
-  Pin6.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(6);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(6);
-    }
-  });
-  Pin7.addEventListener('click', function () {
-    var actualAd = tokyoMap.querySelector('article');
-    var previousAd = tokyoMap.querySelector('article:first-of-type');
-    if (actualAd === null) {
-      insertAd(7);
-    } else if (previousAd !== null) {
-      tokyoMap.removeChild(actualAd);
-      insertAd(7);
-    }
-  });
-};
-
 mainPin.addEventListener('mouseup', function () { // перевели все в активное состояние по опусканию пина
-  cancelInactiveState();
-  addTextInField(addressField, pinLocation);
+  cancelPageInactive(); // разблокировали форму
+  addTextInField(addressField, pinLocation); // добавили адрес в форму
   insertPins(); // сгененрировали и добавили пины
-  clickPin(); // добавление объявлений по клику
 });
