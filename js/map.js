@@ -44,6 +44,10 @@ var getRandomNumber = function (lengthOfArray) { // выбор случайно�
   return Math.floor(Math.random() * lengthOfArray);
 };
 
+function getRandomInt(min, max) { // выбор случайного числа из диапазона (не включая max)
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 function removeAllChildren(parent) { // удаляет всех детей parent
   while (parent.lastChild) {
     parent.removeChild(parent.lastChild);
@@ -93,19 +97,19 @@ var determineFlatType = function (flatParam) { // определяет пара�
 
 // ФУНКЦИИ ДЛЯ РАБОТЫ С ТЕМПЛЕЙТОМ -- осовные
 var generateAd = function () { // функция для генерации одного объекта массива предложений
-  var OBJECT_LOCATION_X = Math.floor((Math.random() * 2 + 1) * 300);
-  var OBJECT_LOCATION_Y = Math.floor((Math.random() * 35 + 15) * 10);
+  var OBJECT_LOCATION_X = getRandomInt(300, 901);
+  var OBJECT_LOCATION_Y = getRandomInt(150, 501);
   var adResult = {
     'author': {
-      'avatar': 'img/avatars/user' + '0' + Math.floor(Math.random() * 8 + 1) + '.png'
+      'avatar': 'img/avatars/user' + '0' + getRandomInt(1, 9) + '.png'
     },
     'offer': {
       'title': AD_TITLES[getRandomNumber(AD_TITLES.length)],
       'address': OBJECT_LOCATION_X + ', ' + OBJECT_LOCATION_Y,
-      'price': Math.floor(Math.random() * 1000 + 1) * 1000,
+      'price': getRandomInt(1000, 1000001),
       'type': PLACE_TYPES[getRandomNumber(PLACE_TYPES.length)],
-      'rooms': Math.floor(Math.random() * 5 + 1),
-      'guests': Math.floor(Math.random() * 20 + 1),
+      'rooms': getRandomInt(1, 6),
+      'guests': getRandomInt(1, 16),
       'checkin': CHECKIN_TIMES[getRandomNumber(CHECKIN_TIMES.length)],
       'checkout': CHECKOUT_TIMES[getRandomNumber(CHECKOUT_TIMES.length)],
       'features': getFeatures(),
@@ -219,6 +223,106 @@ var cancelPageInactive = function () { // отменяет неактивное 
   tokyoMap.classList.remove('map--faded');
   removeFormDisabled();
 };
+
+var formType = document.getElementById('type');
+var formPrice = document.getElementById('price');
+var formCheckIn = document.getElementById('timein');
+var formCheckOut = document.getElementById('timeout');
+var formRooms = document.getElementById('room_number');
+var formGuests = document.getElementById('capacity');
+
+if (formType.value === 'flat') {
+  formPrice.min = '1000';
+  formPrice.placeholder = '1000';
+}
+
+formType.addEventListener('input', function () { // соответствие цены и типа жилья
+  if (formType.value === 'bungalo') {
+    formPrice.min = '0';
+    formPrice.placeholder = '0';
+  } else if (formType.value === 'flat') {
+    formPrice.min = '1000';
+    formPrice.placeholder = '1000';
+  } else if (formType.value === 'house') {
+    formPrice.min = '5000';
+    formPrice.placeholder = '5000';
+  } else if (formType.value === 'palace') {
+    formPrice.min = '10000';
+    formPrice.placeholder = '10000';
+  }
+});
+
+// var setFieldConnection = function (actField, reactField, actValue, reactValue) {
+//   actField.addEventListener('input', function () { // проверка минимальной длинны для Edge
+//     if (actField.value === actValue) {
+//       reactField.value = reactValue;
+//     } else if (checkInTime.value === '13:00') {
+//       checkOutTime.value = '13:00';
+//     } else if (checkInTime.value === '14:00') {
+//       checkOutTime.value = '14:00';
+//     }
+//   });
+// };
+
+formCheckIn.addEventListener('input', function () { // время выезда в зависимости от времени въезда
+  if (formCheckIn.value === '12:00') {
+    formCheckOut.value = '12:00';
+  } else if (formCheckIn.value === '13:00') {
+    formCheckOut.value = '13:00';
+  } else if (formCheckIn.value === '14:00') {
+    formCheckOut.value = '14:00';
+  }
+});
+
+formCheckOut.addEventListener('input', function () { // время въезда в зависимости от времени выезда
+  if (formCheckOut.value === '12:00') {
+    formCheckIn.value = '12:00';
+  } else if (formCheckOut.value === '13:00') {
+    formCheckIn.value = '13:00';
+  } else if (formCheckOut.value === '14:00') {
+    formCheckIn.value = '14:00';
+  }
+});
+
+formRooms.addEventListener('input', function () { // соответсвие количества комнат и жильцов (сложная и неудобная реализация)
+  if (formRooms.value === '1') {
+    formGuests.options[0].selected = '';
+    formGuests.options[0].disabled = 'true';
+    formGuests.options[1].selected = '';
+    formGuests.options[1].disabled = 'true';
+    formGuests.options[2].selected = 'true';
+    formGuests.options[2].disabled = '';
+    formGuests.options[3].selected = '';
+    formGuests.options[3].disabled = 'true';
+  } else if (formRooms.value === '2') {
+    formGuests.options[0].selected = '';
+    formGuests.options[0].disabled = 'true';
+    formGuests.options[1].selected = 'true';
+    formGuests.options[1].disabled = '';
+    formGuests.options[2].selected = '';
+    formGuests.options[2].disabled = '';
+    formGuests.options[3].selected = '';
+    formGuests.options[3].disabled = 'true';
+  } else if (formRooms.value === '3') {
+    formGuests.options[0].selected = 'true';
+    formGuests.options[0].disabled = '';
+    formGuests.options[1].selected = '';
+    formGuests.options[1].disabled = '';
+    formGuests.options[2].selected = '';
+    formGuests.options[2].disabled = '';
+    formGuests.options[3].selected = '';
+    formGuests.options[3].disabled = 'true';
+  } else if (formRooms.value === '100') {
+    formGuests.options[0].selected = '';
+    formGuests.options[0].disabled = 'true';
+    formGuests.options[1].selected = '';
+    formGuests.options[1].disabled = 'true';
+    formGuests.options[2].selected = '';
+    formGuests.options[2].disabled = 'true';
+    formGuests.options[3].selected = 'true';
+    formGuests.options[3].disabled = '';
+  }
+});
 
 generateSimilarAds(); // сгенерировали 8 похожишь объявлений
 addTextInField(addressField, pinButtonLocation); // добавили адрес в форму
