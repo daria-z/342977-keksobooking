@@ -231,11 +231,6 @@ var formCheckOut = document.getElementById('timeout');
 var formRooms = document.getElementById('room_number');
 var formGuests = document.getElementById('capacity');
 
-if (formType.value === 'flat') {
-  formPrice.min = '1000';
-  formPrice.placeholder = '1000';
-}
-
 formType.addEventListener('input', function () { // соответствие цены и типа жилья
   if (formType.value === 'bungalo') {
     formPrice.min = '0';
@@ -251,18 +246,6 @@ formType.addEventListener('input', function () { // соответствие ц�
     formPrice.placeholder = '10000';
   }
 });
-
-// var setFieldConnection = function (actField, reactField, actValue, reactValue) {
-//   actField.addEventListener('input', function () { // проверка минимальной длинны для Edge
-//     if (actField.value === actValue) {
-//       reactField.value = reactValue;
-//     } else if (checkInTime.value === '13:00') {
-//       checkOutTime.value = '13:00';
-//     } else if (checkInTime.value === '14:00') {
-//       checkOutTime.value = '14:00';
-//     }
-//   });
-// };
 
 formCheckIn.addEventListener('input', function () { // время выезда в зависимости от времени въезда
   if (formCheckIn.value === '12:00') {
@@ -284,43 +267,23 @@ formCheckOut.addEventListener('input', function () { // время въезда 
   }
 });
 
-formRooms.addEventListener('input', function () { // соответсвие количества комнат и жильцов (сложная и неудобная реализация)
-  if (formRooms.value === '1') {
-    formGuests.options[0].selected = '';
-    formGuests.options[0].disabled = 'true';
-    formGuests.options[1].selected = '';
-    formGuests.options[1].disabled = 'true';
-    formGuests.options[2].selected = 'true';
-    formGuests.options[2].disabled = '';
-    formGuests.options[3].selected = '';
-    formGuests.options[3].disabled = 'true';
-  } else if (formRooms.value === '2') {
-    formGuests.options[0].selected = '';
-    formGuests.options[0].disabled = 'true';
-    formGuests.options[1].selected = 'true';
-    formGuests.options[1].disabled = '';
-    formGuests.options[2].selected = '';
-    formGuests.options[2].disabled = '';
-    formGuests.options[3].selected = '';
-    formGuests.options[3].disabled = 'true';
-  } else if (formRooms.value === '3') {
-    formGuests.options[0].selected = 'true';
-    formGuests.options[0].disabled = '';
-    formGuests.options[1].selected = '';
-    formGuests.options[1].disabled = '';
-    formGuests.options[2].selected = '';
-    formGuests.options[2].disabled = '';
-    formGuests.options[3].selected = '';
-    formGuests.options[3].disabled = 'true';
-  } else if (formRooms.value === '100') {
-    formGuests.options[0].selected = '';
-    formGuests.options[0].disabled = 'true';
-    formGuests.options[1].selected = '';
-    formGuests.options[1].disabled = 'true';
-    formGuests.options[2].selected = '';
-    formGuests.options[2].disabled = 'true';
-    formGuests.options[3].selected = 'true';
-    formGuests.options[3].disabled = '';
+formGuests.addEventListener('input', function () { // соответсвие количества комнат и жильцов реализация без учета 100 комнат
+  if (formRooms.value < formGuests.value) {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else {
+    formGuests.valid = 'true';
+    formGuests.setCustomValidity('');
+  }
+});
+
+formRooms.addEventListener('input', function () {
+  if (formRooms.value < formGuests.value) {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else {
+    formGuests.valid = 'true';
+    formGuests.setCustomValidity('');
   }
 });
 
