@@ -169,6 +169,10 @@ var renderAd = function (ad) { // функция для генирации од�
   return adElement;
 };
 
+var insertAd = function (idNum) { // добавляем одно объявление перед блоком фильтров
+  tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
+};
+
 var renderPin = function (pin) { // функция для генирации одного пина
   var pinElement = pinTemplate.cloneNode(true); // копируем теиплейт
 
@@ -180,16 +184,12 @@ var renderPin = function (pin) { // функция для генирации о�
     var actualAd = tokyoMap.querySelector('article');
     if (actualAd === null) {
       insertAd(pin.id.pin);
-    } else if (actualAd !== null) {
+    } else {
       tokyoMap.removeChild(actualAd);
       insertAd(pin.id.pin);
     }
   });
   return pinElement;
-};
-
-var insertAd = function (idNum) { // добавляем одно объявление перед блоком фильтров
-  tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
 };
 
 var insertPins = function () { // добавляем все пины
@@ -262,7 +262,10 @@ formCheckOut.addEventListener('input', function () { // время въезда 
 });
 
 formGuests.addEventListener('input', function () { // соответсвие количества комнат и жильцов реализация без учета 100 комнат
-  if (formRooms.value < formGuests.value) {
+  if (formGuests.value === '0' && formRooms.value !== '100') {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else if (formRooms.value < formGuests.value) {
     formGuests.valid = '';
     formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
   } else {
@@ -272,7 +275,10 @@ formGuests.addEventListener('input', function () { // соответсвие к�
 });
 
 formRooms.addEventListener('input', function () {
-  if (formRooms.value < formGuests.value) {
+  if (formGuests.value === '0' && formRooms.value !== '100') {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else if (formRooms.value < formGuests.value) {
     formGuests.valid = '';
     formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
   } else {
@@ -311,10 +317,15 @@ var switchGroupElementsClasses = function (groupElement, className) { // пер�
   });
 };
 
-switchGroupElementsClasses(allPins, 'map__pin--active'); // добавили переключатель классов между пинами
 generateSimilarAds(); // сгенерировали 8 похожишь объявлений
+switchGroupElementsClasses(allPins, 'map__pin--active'); // добавили переключатель классов между пинами
 addTextInField(addressField, pinButtonLocation); // добавили адрес в форму
 addFormDisabled(); // заблокировали форму
+
+mainPin.addEventListener('mousedown', function () { // перевели все в активное состояние по опусканию пина
+  cancelPageInactive(); // разблокировали форму
+  insertPins(); // сгененрировали и добавили пины
+});
 
 // РЕАЛИЗАЦИЯ ПЕРЕТАСКИВАНИЯ ПИНА
 
@@ -354,9 +365,4 @@ mainPin.addEventListener('mousedown', function (evt) {
 
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
-});
-
-mainPin.addEventListener('mousedown', function () { // перевели все в активное состояние по опусканию пина
-  cancelPageInactive(); // разблокировали форму
-  insertPins(); // сгененрировали и добавили пины
 });
