@@ -201,6 +201,13 @@ var insertPins = function () { // добавляем все пины
 };
 
 // ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
+var formType = document.getElementById('type');
+var formPrice = document.getElementById('price');
+var formCheckIn = document.getElementById('timein');
+var formCheckOut = document.getElementById('timeout');
+var formRooms = document.getElementById('room_number');
+var formGuests = document.getElementById('capacity');
+
 var addTextInField = function (where, what) { // добавление текста в поле
   where.value = what;
 };
@@ -217,19 +224,6 @@ var removeFormDisabled = function () { // отменяет неактивное 
   }
   userForm.classList.remove('ad-form--disabled');
 };
-
-// ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
-var cancelPageInactive = function () { // отменяет неактивное состояние страницы
-  tokyoMap.classList.remove('map--faded');
-  removeFormDisabled();
-};
-
-var formType = document.getElementById('type');
-var formPrice = document.getElementById('price');
-var formCheckIn = document.getElementById('timein');
-var formCheckOut = document.getElementById('timeout');
-var formRooms = document.getElementById('room_number');
-var formGuests = document.getElementById('capacity');
 
 formType.addEventListener('input', function () { // соответствие цены и типа жилья
   if (formType.value === 'bungalo') {
@@ -287,6 +281,37 @@ formRooms.addEventListener('input', function () {
   }
 });
 
+// ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
+var cancelPageInactive = function () { // отменяет неактивное состояние страницы
+  tokyoMap.classList.remove('map--faded');
+  removeFormDisabled();
+};
+
+var switchGroupElementsClasses = function (groupElement, className) { // переключает классы между пинами
+  var removeOldClass = function () {
+    oldClass.classList.remove(className);
+  };
+  var addNewClass = function (evt) {
+    var newPin = evt.target;
+    newPin.classList.add(className);
+  };
+
+  var oldClass = '';
+
+  groupElement.addEventListener('click', function (evt) {
+    if (oldClass === '') {
+      addNewClass(evt);
+      oldClass = evt.target;
+    } else {
+      removeOldClass();
+      addNewClass(evt);
+      oldClass = evt.target;
+    }
+    return oldClass;
+  });
+};
+
+switchGroupElementsClasses(allPins, 'map__pin--active'); // добавили переключатель классов между пинами
 generateSimilarAds(); // сгенерировали 8 похожишь объявлений
 addTextInField(addressField, pinButtonLocation); // добавили адрес в форму
 addFormDisabled(); // заблокировали форму
