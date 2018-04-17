@@ -44,6 +44,10 @@ var getRandomNumber = function (lengthOfArray) { // выбор случайно�
   return Math.floor(Math.random() * lengthOfArray);
 };
 
+function getRandomInt(min, max) { // выбор случайного числа из диапазона (не включая max)
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 function removeAllChildren(parent) { // удаляет всех детей parent
   while (parent.lastChild) {
     parent.removeChild(parent.lastChild);
@@ -93,19 +97,19 @@ var determineFlatType = function (flatParam) { // определяет пара�
 
 // ФУНКЦИИ ДЛЯ РАБОТЫ С ТЕМПЛЕЙТОМ -- осовные
 var generateAd = function () { // функция для генерации одного объекта массива предложений
-  var OBJECT_LOCATION_X = Math.floor((Math.random() * 2 + 1) * 300);
-  var OBJECT_LOCATION_Y = Math.floor((Math.random() * 35 + 15) * 10);
+  var OBJECT_LOCATION_X = getRandomInt(300, 901);
+  var OBJECT_LOCATION_Y = getRandomInt(150, 501);
   var adResult = {
     'author': {
-      'avatar': 'img/avatars/user' + '0' + Math.floor(Math.random() * 8 + 1) + '.png'
+      'avatar': 'img/avatars/user' + '0' + getRandomInt(1, 9) + '.png'
     },
     'offer': {
       'title': AD_TITLES[getRandomNumber(AD_TITLES.length)],
       'address': OBJECT_LOCATION_X + ', ' + OBJECT_LOCATION_Y,
-      'price': Math.floor(Math.random() * 1000 + 1) * 1000,
+      'price': getRandomInt(1000, 1000001),
       'type': PLACE_TYPES[getRandomNumber(PLACE_TYPES.length)],
-      'rooms': Math.floor(Math.random() * 5 + 1),
-      'guests': Math.floor(Math.random() * 20 + 1),
+      'rooms': getRandomInt(1, 6),
+      'guests': getRandomInt(1, 16),
       'checkin': CHECKIN_TIMES[getRandomNumber(CHECKIN_TIMES.length)],
       'checkout': CHECKOUT_TIMES[getRandomNumber(CHECKOUT_TIMES.length)],
       'features': getFeatures(),
@@ -165,6 +169,10 @@ var renderAd = function (ad) { // функция для генирации од�
   return adElement;
 };
 
+var insertAd = function (idNum) { // добавляем одно объявление перед блоком фильтров
+  tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
+};
+
 var renderPin = function (pin) { // функция для генирации одного пина
   var pinElement = pinTemplate.cloneNode(true); // копируем теиплейт
 
@@ -176,16 +184,12 @@ var renderPin = function (pin) { // функция для генирации о�
     var actualAd = tokyoMap.querySelector('article');
     if (actualAd === null) {
       insertAd(pin.id.pin);
-    } else if (actualAd !== null) {
+    } else {
       tokyoMap.removeChild(actualAd);
       insertAd(pin.id.pin);
     }
   });
   return pinElement;
-};
-
-var insertAd = function (idNum) { // добавляем одно объявление перед блоком фильтров
-  tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
 };
 
 var insertPins = function () { // добавляем все пины
@@ -197,6 +201,13 @@ var insertPins = function () { // добавляем все пины
 };
 
 // ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
+var formType = document.getElementById('type');
+var formPrice = document.getElementById('price');
+var formCheckIn = document.getElementById('timein');
+var formCheckOut = document.getElementById('timeout');
+var formRooms = document.getElementById('room_number');
+var formGuests = document.getElementById('capacity');
+
 var addTextInField = function (where, what) { // добавление текста в поле
   where.value = what;
 };
@@ -214,18 +225,168 @@ var removeFormDisabled = function () { // отменяет неактивное 
   userForm.classList.remove('ad-form--disabled');
 };
 
+formType.addEventListener('input', function () { // соответствие цены и типа жилья
+  if (formType.value === 'bungalo') {
+    formPrice.min = '0';
+    formPrice.placeholder = '0';
+  } else if (formType.value === 'flat') {
+    formPrice.min = '1000';
+    formPrice.placeholder = '1000';
+  } else if (formType.value === 'house') {
+    formPrice.min = '5000';
+    formPrice.placeholder = '5000';
+  } else if (formType.value === 'palace') {
+    formPrice.min = '10000';
+    formPrice.placeholder = '10000';
+  }
+});
+
+formCheckIn.addEventListener('input', function () { // время выезда в зависимости от времени въезда
+  if (formCheckIn.value === '12:00') {
+    formCheckOut.value = '12:00';
+  } else if (formCheckIn.value === '13:00') {
+    formCheckOut.value = '13:00';
+  } else if (formCheckIn.value === '14:00') {
+    formCheckOut.value = '14:00';
+  }
+});
+
+formCheckOut.addEventListener('input', function () { // время въезда в зависимости от времени выезда
+  if (formCheckOut.value === '12:00') {
+    formCheckIn.value = '12:00';
+  } else if (formCheckOut.value === '13:00') {
+    formCheckIn.value = '13:00';
+  } else if (formCheckOut.value === '14:00') {
+    formCheckIn.value = '14:00';
+  }
+});
+
+formGuests.addEventListener('input', function () { // соответсвие количества комнат и жильцов реализация без учета 100 комнат
+  if (formGuests.value === '0' && formRooms.value !== '100') {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else if (formRooms.value < formGuests.value) {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else {
+    formGuests.valid = 'true';
+    formGuests.setCustomValidity('');
+  }
+});
+
+formRooms.addEventListener('input', function () {
+  if (formGuests.value === '0' && formRooms.value !== '100') {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else if (formRooms.value < formGuests.value) {
+    formGuests.valid = '';
+    formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+  } else {
+    formGuests.valid = 'true';
+    formGuests.setCustomValidity('');
+  }
+});
+
+formRooms.addEventListener('input', function () { // соответсвие количества комнат и жильцов реализация без учета 100 комнат
+  if (formRooms.value === '1') {
+    formGuests.options[0].disabled = 'true'; // 3 гостя
+    formGuests.options[1].disabled = 'true'; // 2 гостя
+    formGuests.options[2].disabled = ''; // 1 гость
+    formGuests.options[3].disabled = 'true'; // не для гостей
+  } else if (formRooms.value === '2') {
+    formGuests.options[0].disabled = 'true'; // 3 гостя
+    formGuests.options[1].disabled = ''; // 2 гостя
+    formGuests.options[2].disabled = ''; // 1 гость
+    formGuests.options[3].disabled = 'true'; // не для гостей
+  } else if (formRooms.value === '3') {
+    formGuests.options[0].disabled = ''; // 3 гостя
+    formGuests.options[1].disabled = ''; // 2 гостя
+    formGuests.options[2].disabled = ''; // 1 гость
+    formGuests.options[3].disabled = 'true'; // не для гостей
+  } else if (formRooms.value === '100') {
+    formGuests.options[0].disabled = 'true'; // 3 гостя
+    formGuests.options[1].disabled = 'true'; // 2 гостя
+    formGuests.options[2].disabled = 'true'; // 1 гость
+    formGuests.options[3].disabled = ''; // не для гостей
+  }
+});
+
 // ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
 var cancelPageInactive = function () { // отменяет неактивное состояние страницы
   tokyoMap.classList.remove('map--faded');
   removeFormDisabled();
 };
 
+var switchGroupElementsClasses = function (groupElement, className) { // переключает классы между пинами
+  var removeOldClass = function () {
+    oldClass.classList.remove(className);
+  };
+  var addNewClass = function (evt) {
+    var newPin = evt.target;
+    newPin.classList.add(className);
+  };
+
+  var oldClass = '';
+
+  groupElement.addEventListener('click', function (evt) {
+    if (oldClass === '') {
+      addNewClass(evt);
+      oldClass = evt.target;
+    } else {
+      removeOldClass();
+      addNewClass(evt);
+      oldClass = evt.target;
+    }
+    return oldClass;
+  });
+};
+
 generateSimilarAds(); // сгенерировали 8 похожишь объявлений
+switchGroupElementsClasses(allPins, 'map__pin--active'); // добавили переключатель классов между пинами
 addTextInField(addressField, pinButtonLocation); // добавили адрес в форму
 addFormDisabled(); // заблокировали форму
 
-mainPin.addEventListener('mouseup', function () { // перевели все в активное состояние по опусканию пина
+mainPin.addEventListener('mousedown', function () { // перевели все в активное состояние по опусканию пина
   cancelPageInactive(); // разблокировали форму
-  addTextInField(addressField, pinLocation); // добавили адрес в форму
   insertPins(); // сгененрировали и добавили пины
+});
+
+// РЕАЛИЗАЦИЯ ПЕРЕТАСКИВАНИЯ ПИНА
+
+mainPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+    mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+    pinLocation = (parseInt(mainPin.style.left, 10) - PIN_WIDTH / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_HEIGHT);
+    addTextInField(addressField, pinLocation); // добавили адрес в форму
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
 });
