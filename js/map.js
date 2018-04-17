@@ -287,6 +287,30 @@ formRooms.addEventListener('input', function () {
   }
 });
 
+formRooms.addEventListener('input', function () { // соответсвие количества комнат и жильцов реализация без учета 100 комнат
+  if (formRooms.value === '1') {
+    formGuests.options[0].disabled = 'true'; // 3 гостя
+    formGuests.options[1].disabled = 'true'; // 2 гостя
+    formGuests.options[2].disabled = ''; // 1 гость
+    formGuests.options[3].disabled = 'true'; // не для гостей
+  } else if (formRooms.value === '2') {
+    formGuests.options[0].disabled = 'true'; // 3 гостя
+    formGuests.options[1].disabled = ''; // 2 гостя
+    formGuests.options[2].disabled = ''; // 1 гость
+    formGuests.options[3].disabled = 'true'; // не для гостей
+  } else if (formRooms.value === '3') {
+    formGuests.options[0].disabled = ''; // 3 гостя
+    formGuests.options[1].disabled = ''; // 2 гостя
+    formGuests.options[2].disabled = ''; // 1 гость
+    formGuests.options[3].disabled = 'true'; // не для гостей
+  } else if (formRooms.value === '100') {
+    formGuests.options[0].disabled = 'true'; // 3 гостя
+    formGuests.options[1].disabled = 'true'; // 2 гостя
+    formGuests.options[2].disabled = 'true'; // 1 гость
+    formGuests.options[3].disabled = ''; // не для гостей
+  }
+});
+
 // ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
 var cancelPageInactive = function () { // отменяет неактивное состояние страницы
   tokyoMap.classList.remove('map--faded');
