@@ -363,6 +363,11 @@ mainPin.addEventListener('mousedown', function (evt) {
 
   var onMouseMove = function (moveEvt) {
     moveEvt.preventDefault();
+    var mapCoords = tokyoMap.querySelector('.map__overlay').getBoundingClientRect();
+    var mapMinX = (mapCoords.x - mapCoords.left) - (PIN_WIDTH / 2);
+    var mapMaxX = mapCoords.height - (PIN_HEIGHT / 2);
+    var mapMinY = mapCoords.y;
+    var mapMaxY = mapCoords.width - (PIN_WIDTH / 2);
 
     var shift = {
       x: startCoords.x - moveEvt.clientX,
@@ -374,8 +379,14 @@ mainPin.addEventListener('mousedown', function (evt) {
       y: moveEvt.clientY
     };
 
-    mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
-    mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+    var pinTop = mainPin.offsetTop - shift.y;
+    var pinLeft = mainPin.offsetLeft - shift.x;
+
+    if (pinLeft > mapMinX && pinLeft < mapMaxY && pinTop > mapMinY && pinTop < mapMaxX) {
+      mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
+      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+    }
+
     pinLocation = (parseInt(mainPin.style.left, 10) - PIN_WIDTH / 2) + ' , ' + (parseInt(mainPin.style.top, 10) - PIN_HEIGHT);
     addTextInField(addressField, pinLocation); // добавили адрес в форму
   };
