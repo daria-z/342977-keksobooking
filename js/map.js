@@ -37,4 +37,5 @@
     cancelPageInactive(); // разблокировали форму
     window.pins.insertPins(); // сгененрировали и добавили пины
   });
+  window.adds.renderAd();
 })();

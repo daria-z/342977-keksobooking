@@ -108,36 +108,6 @@
     return adResult;
   };
 
-  var renderAd = function (ad) { // функция для генирации одного объявления в темплейт на осове данных из массива
-    var adElement = adTemplate.cloneNode(true); // копируем теиплейт
-    var featuresList = adElement.querySelector('.popup__features'); // список фич в темплейте
-    var roomsNumeral = pickUpNumeEnding(ad.offer.rooms, ['комната', 'комнаты', 'комнат']);
-    var guestsNumeral = pickUpNumeEnding(ad.offer.guests, ['гостя', 'гостей', 'гостей']);
-
-    adElement.id = ad.id.ad;
-    adElement.querySelector('.popup__title').textContent = ad.offer.title; // добавили заголовок из массива
-    adElement.querySelector('.popup__text--address').textContent = ad.offer.address; // добавили адрес из массива
-    adElement.querySelector('.popup__text--price').textContent = ad.offer.price + '\u20bd/ночь';
-    adElement.querySelector('.popup__type').textContent = determineFlatType(ad.offer.type); // добавили заголовок из массива !!! Квартира для flat, Бунгало для bungalo, Дом для house
-    adElement.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' ' + roomsNumeral + ' ' + 'для ' + ad.offer.guests + ' ' + guestsNumeral;
-    adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
-    removeAllChildren(featuresList); // удаляем дочерние элементы списка фич из темплейта
-    for (var j = 0; j < ad.offer.features.length; j++) { // создаем и добавляем нужное количество фич в список
-      var featuresListItem = document.createElement('li');
-      featuresListItem.className = 'popup__feature popup__feature--' + ad.offer.features[j];
-      featuresList.appendChild(featuresListItem);
-    }
-    adElement.querySelector('.popup__description').textContent = ad.offer.description; // добавили заголовок из массива
-    for (var i = 0; i < ad.offer.photos.length - 1; i++) { // увеличили количество img до нужного числа
-      adElement.querySelector('.popup__photos').appendChild(adElement.querySelector('.popup__photo').cloneNode(true));
-    }
-    for (i = 0; i < ad.offer.photos.length; i++) { // отдали img нужные адреса
-      adElement.querySelector('.popup__photo:nth-child(' + (i + 1) + ')').src = ad.offer.photos[i];
-    }
-    adElement.querySelector('.popup__avatar').src = ad.author.avatar; // Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
-    return adElement;
-  };
-
   window.adds = {
     similarAds: similarAds,
     generateSimilarAds: function () { // функция для генерации восьми похожих объявлений
@@ -148,24 +118,65 @@
         similarAds.push(actualAd); // Записываем актуальный объект в массив
       }
     },
-    insertAd: function (idNum) { // добавляем одно объявление перед блоком фильтров
-      window.util.tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
+    renderAd: function () { // функция для генирации одного объявления в темплейт на осове данных из массива
+      // var oneAd = document.createElement('div');
+      var adElement = adTemplate.cloneNode(true); // копируем теиплейт
+      // oneAd.appendChild(adElement);
+      window.util.tokyoMap.appendChild(adElement);
+      // window.util.tokyoMap.appendChild(oneAd);
+      var newAdd = window.util.tokyoMap.querySelector('article');
+      newAdd.classList.add('hidden');
+    },
+    showAd: function (ad) {
+      var adElement = window.util.tokyoMap.querySelector('article, .popup');
+      var featuresList = adElement.querySelector('.popup__features'); // список фич
+      var roomsNumeral = pickUpNumeEnding(ad.offer.rooms, ['комната', 'комнаты', 'комнат']);
+      var guestsNumeral = pickUpNumeEnding(ad.offer.guests, ['гостя', 'гостей', 'гостей']);
+      var photosList = adElement.querySelector('.popup__photos');
+      var onePhoto = adElement.querySelector('.popup__photo');
+
+      adElement.id = ad.id.ad;
+      adElement.querySelector('.popup__title').textContent = ad.offer.title; // добавили заголовок из массива
+      adElement.querySelector('.popup__text--address').textContent = ad.offer.address; // добавили адрес из массива
+      adElement.querySelector('.popup__text--price').textContent = ad.offer.price + '\u20bd/ночь';
+      adElement.querySelector('.popup__type').textContent = determineFlatType(ad.offer.type); // добавили заголовок из массива !!! Квартира для flat, Бунгало для bungalo, Дом для house
+      adElement.querySelector('.popup__text--capacity').textContent = ad.offer.rooms + ' ' + roomsNumeral + ' ' + 'для ' + ad.offer.guests + ' ' + guestsNumeral;
+      adElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout + '.';
+      removeAllChildren(featuresList); // удаляем дочерние элементы списка фич из темплейта
+      for (var j = 0; j < ad.offer.features.length; j++) { // создаем и добавляем нужное количество фич в список
+        var featuresListItem = document.createElement('li');
+        featuresListItem.className = 'popup__feature popup__feature--' + ad.offer.features[j];
+        featuresList.appendChild(featuresListItem);
+      }
+      adElement.querySelector('.popup__description').textContent = ad.offer.description; // добавили заголовок из массива
+
+      removeAllChildren(photosList);
+      for (var i = 0; i < ad.offer.photos.length; i++) { // увеличили количество img до нужного числа
+        photosList.appendChild(onePhoto.cloneNode(true));
+      }
+      for (i = 0; i < ad.offer.photos.length; i++) { // отдали img нужные адреса
+        adElement.querySelector('.popup__photo:nth-child(' + (i + 1) + ')').src = ad.offer.photos[i];
+      }
+      adElement.querySelector('.popup__avatar').src = ad.author.avatar; // Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
+      if (adElement.classList.contains('hidden')) {
+        adElement.classList.remove('hidden');
+      }
+      return adElement;
     },
     adClose: function () {
       var adNew = document.querySelector('article');
-      var close = adNew.querySelector('.popup__close');
-
+      var closeButton = adNew.querySelector('.popup__close');
 
       var closeAd = function () {
         adNew.classList.add('hidden');
         document.removeEventListener('keydown', onAdEscPress);
       };
 
-      close.addEventListener('click', function () {
+      closeButton.addEventListener('click', function () {
         closeAd();
       });
 
-      close.addEventListener('keydown', function (evt) {
+      closeButton.addEventListener('keydown', function (evt) {
         if (evt.keyCode === ENTER_KEYCODE) {
           closeAd();
         }
