@@ -8,6 +8,8 @@
   var PLACE_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var PLACE_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']; // как расположить стоки в произвольном порядке
 
+  var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
   // ТЕМПЛЕЙТЫ
   var adTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
       .content // обращаемся к обертке
@@ -133,7 +135,6 @@
       adElement.querySelector('.popup__photo:nth-child(' + (i + 1) + ')').src = ad.offer.photos[i];
     }
     adElement.querySelector('.popup__avatar').src = ad.author.avatar; // Замените src у аватарки пользователя — изображения, которое записано в .popup__avatar — на значения поля author.avatar отрисовываемого объекта.
-
     return adElement;
   };
 
@@ -149,6 +150,32 @@
     },
     insertAd: function (idNum) { // добавляем одно объявление перед блоком фильтров
       window.util.tokyoMap.insertBefore(renderAd(similarAds[idNum]), document.querySelector('.map__filters-container'));
+    },
+    adClose: function () {
+      var adNew = document.querySelector('article');
+      var close = adNew.querySelector('.popup__close');
+
+
+      var closeAd = function () {
+        adNew.classList.add('hidden');
+        document.removeEventListener('keydown', onAdEscPress);
+      };
+
+      close.addEventListener('click', function () {
+        closeAd();
+      });
+
+      close.addEventListener('keydown', function (evt) {
+        if (evt.keyCode === ENTER_KEYCODE) {
+          closeAd();
+        }
+      });
+
+      var onAdEscPress = function (evt) {
+        if (evt.keyCode === ESC_KEYCODE) {
+          closeAd();
+        }
+      };
     }
   };
 })();

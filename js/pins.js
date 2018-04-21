@@ -26,18 +26,19 @@
     pinElement.querySelector('img').alt = pin.offer.title;
     pinElement.addEventListener('click', function () { // функция для генерации слушателя для каждого пина
       var actualAd = window.util.tokyoMap.querySelector('article');
-      if (activePin !== null) {
+      if (activePin !== null) { // смена стиля пина при нажатии
         activePin.classList.remove('map__pin--active');
       }
       activePin = pinElement;
       pinElement.classList.add('map__pin--active');
 
-      if (actualAd === null) {
+      if (actualAd === null) { // удаление ненужного объявления
         window.adds.insertAd(pin.id.pin);
       } else {
         window.util.tokyoMap.removeChild(actualAd);
         window.adds.insertAd(pin.id.pin);
       }
+      window.adds.adClose(); // добавлены обработчики закрытия
     });
     return pinElement;
   };
