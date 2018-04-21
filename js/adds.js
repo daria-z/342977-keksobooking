@@ -166,6 +166,7 @@
     adClose: function () {
       var adNew = document.querySelector('article');
       var closeButton = adNew.querySelector('.popup__close');
+      document.addEventListener('keydown', onAdEscPress);
 
       var closeAd = function () {
         adNew.classList.add('hidden');

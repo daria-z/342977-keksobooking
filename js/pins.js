@@ -31,7 +31,6 @@
       activePin = pinElement;
       pinElement.classList.add('map__pin--active');
       window.adds.showAd(window.adds.similarAds[pin.id.pin]); // добавление информации в объявление
-      window.adds.adClose(); // добавлены обработчики закрытия
     });
     return pinElement;
   };

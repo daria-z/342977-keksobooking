@@ -38,4 +38,6 @@
     window.pins.insertPins(); // сгененрировали и добавили пины
   });
   window.adds.renderAd();
+  window.adds.adClose(); // добавлены обработчики закрытия
+
 })();
