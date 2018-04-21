@@ -19,6 +19,7 @@
 
   var renderPin = function (pin) { // функция для генирации одного пина
     var pinElement = pinTemplate.cloneNode(true); // копируем теиплейт
+    var showedAd = document.querySelector('article');
 
     pinElement.id = pin.id.pin;
     pinElement.style = 'left: ' + (pin.location.x - PIN_WIDTH / 2) + 'px;' + 'top: ' + (pin.location.y - PIN_HEIGHT) + 'px;';
@@ -32,6 +33,18 @@
       pinElement.classList.add('map__pin--active');
       window.adds.showAd(window.adds.similarAds[pin.id.pin]); // добавление информации в объявление
     });
+    if (showedAd !== null) { // убирает выделение пина по закрытию окна
+      var closeButton = showedAd.querySelector('.popup__close');
+      var removeActive = function (evt) {
+        if (evt.keyCode === 27) {
+          pinElement.classList.remove('map__pin--active');
+        }
+      };
+      document.addEventListener('keydown', removeActive);
+      closeButton.addEventListener('click', function () {
+        pinElement.classList.remove('map__pin--active');
+      });
+    }
     return pinElement;
   };
 

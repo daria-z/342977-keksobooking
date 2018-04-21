@@ -8,8 +8,6 @@
   var PLACE_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var PLACE_PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']; // как расположить стоки в произвольном порядке
 
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 13;
   // ТЕМПЛЕЙТЫ
   var adTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
       .content // обращаемся к обертке
@@ -110,6 +108,7 @@
 
   window.adds = {
     similarAds: similarAds,
+    showedAd: window.util.tokyoMap.querySelector('article'),
     generateSimilarAds: function () { // функция для генерации восьми похожих объявлений
       for (var j = 0; j < 8; j++) {
         var actualAd = generateAd(); // генирируем актуальный объект
@@ -124,17 +123,16 @@
       // oneAd.appendChild(adElement);
       window.util.tokyoMap.appendChild(adElement);
       // window.util.tokyoMap.appendChild(oneAd);
-      var newAdd = window.util.tokyoMap.querySelector('article');
-      newAdd.classList.add('hidden');
+      var firstAdd = window.util.tokyoMap.querySelector('article');
+      firstAdd.classList.add('hidden');
     },
     showAd: function (ad) {
-      var adElement = window.util.tokyoMap.querySelector('article, .popup');
+      var adElement = window.util.tokyoMap.querySelector('article');
       var featuresList = adElement.querySelector('.popup__features'); // список фич
       var roomsNumeral = pickUpNumeEnding(ad.offer.rooms, ['комната', 'комнаты', 'комнат']);
       var guestsNumeral = pickUpNumeEnding(ad.offer.guests, ['гостя', 'гостей', 'гостей']);
       var photosList = adElement.querySelector('.popup__photos');
       var onePhoto = adElement.querySelector('.popup__photo');
-
       adElement.id = ad.id.ad;
       adElement.querySelector('.popup__title').textContent = ad.offer.title; // добавили заголовок из массива
       adElement.querySelector('.popup__text--address').textContent = ad.offer.address; // добавили адрес из массива
@@ -149,7 +147,6 @@
         featuresList.appendChild(featuresListItem);
       }
       adElement.querySelector('.popup__description').textContent = ad.offer.description; // добавили заголовок из массива
-
       removeAllChildren(photosList);
       for (var i = 0; i < ad.offer.photos.length; i++) { // увеличили количество img до нужного числа
         photosList.appendChild(onePhoto.cloneNode(true));
@@ -161,33 +158,25 @@
       if (adElement.classList.contains('hidden')) {
         adElement.classList.remove('hidden');
       }
+      document.addEventListener('keydown', window.adds.onAdEscPress);
       return adElement;
     },
+    onAdEscPress: function (evt) {
+      if (evt.keyCode === 27) {
+        window.adds.closeAd();
+      }
+    },
+    closeAd: function () {
+      var showedAd = document.querySelector('article');
+      showedAd.classList.add('hidden');
+      document.removeEventListener('keydown', window.adds.onAdEscPress);
+    },
     adClose: function () {
-      var adNew = document.querySelector('article');
-      var closeButton = adNew.querySelector('.popup__close');
-      document.addEventListener('keydown', onAdEscPress);
-
-      var closeAd = function () {
-        adNew.classList.add('hidden');
-        document.removeEventListener('keydown', onAdEscPress);
-      };
-
+      var showedAd = document.querySelector('article');
+      var closeButton = showedAd.querySelector('.popup__close');
       closeButton.addEventListener('click', function () {
-        closeAd();
+        window.adds.closeAd();
       });
-
-      closeButton.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === ENTER_KEYCODE) {
-          closeAd();
-        }
-      });
-
-      var onAdEscPress = function (evt) {
-        if (evt.keyCode === ESC_KEYCODE) {
-          closeAd();
-        }
-      };
     }
   };
 })();
