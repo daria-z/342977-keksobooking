@@ -6,6 +6,7 @@
 
   var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
   var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
+  var activePin = null;
 
   // ТЕМПЛЕЙТЫ
   var pinTemplate = document.querySelector('template') // находим шаблон пина и записываем в переменную
@@ -25,6 +26,12 @@
     pinElement.querySelector('img').alt = pin.offer.title;
     pinElement.addEventListener('click', function () { // функция для генерации слушателя для каждого пина
       var actualAd = window.util.tokyoMap.querySelector('article');
+      if (activePin !== null) {
+        activePin.classList.remove('map__pin--active');
+      }
+      activePin = pinElement;
+      pinElement.classList.add('map__pin--active');
+
       if (actualAd === null) {
         window.adds.insertAd(pin.id.pin);
       } else {

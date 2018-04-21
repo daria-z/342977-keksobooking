@@ -10,7 +10,6 @@
 
   // ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
 
-
   var cancelPageInactive = function () { // отменяет неактивное состояние страницы
     window.util.tokyoMap.classList.remove('map--faded');
     removeFormDisabled();
@@ -29,33 +28,8 @@
     userForm.classList.remove('ad-form--disabled');
   };
 
-  // ОФОРМЛЕНИЕ ПИНА ПО КЛИКУ
-  var switchGroupElementsClasses = function (groupElement, className) { // переключает классы между пинами
-    var removeOldClass = function () {
-      oldClass.classList.remove(className);
-    };
-    var addNewClass = function (evt) {
-      var newPin = evt.target;
-      newPin.classList.add(className);
-    };
-
-    var oldClass = '';
-
-    groupElement.addEventListener('click', function (evt) {
-      if (oldClass === '') {
-        addNewClass(evt);
-        oldClass = evt.target;
-      } else {
-        removeOldClass();
-        addNewClass(evt);
-        oldClass = evt.target;
-      }
-      return oldClass;
-    });
-  };
-
   window.adds.generateSimilarAds(); // сгенерировали 8 похожишь объявлений
-  switchGroupElementsClasses(window.pins.allPins, 'map__pin--active'); // добавили переключатель классов между пинами
+  // switchGroupElementsClasses(window.pins.allPins, 'map__pin--active'); // добавили переключатель классов между пинами
   window.util.addTextInField(window.util.addressField, pinButtonLocation); // добавили адрес в форму
   addFormDisabled(); // заблокировали форму
 
