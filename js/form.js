@@ -2,6 +2,8 @@
 
 (function () {
   // ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
+  var form = document.querySelector('.ad-form');
+  var formTitle = document.getElementById('title');
   var formType = document.getElementById('type');
   var formPrice = document.getElementById('price');
   var formCheckIn = document.getElementById('timein');
@@ -93,5 +95,12 @@
       formGuests.options[2].disabled = 'true'; // 1 гость
       formGuests.options[3].disabled = ''; // не для гостей
     }
+  });
+
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(form), function () {
+      formTitle.removeAttribute('value');
+    });
   });
 })();

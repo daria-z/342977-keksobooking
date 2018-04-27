@@ -17,22 +17,14 @@
   var allPins = document.createElement('div'); // создали переменную в которую сложим сгенерированные пины
   var fragmentPins = document.createDocumentFragment(); // создали фрагмент для вставки всех пинов за раз
 
-  var renderPin = function (pin) { // функция для генирации одного пина
+  var renderPin = function (ad) { // функция для генирации одного пина
     var pinElement = pinTemplate.cloneNode(true); // копируем теиплейт
     var showedAd = document.querySelector('article');
 
-    pinElement.id = pin.id.pin;
-    pinElement.style = 'left: ' + (pin.location.x - PIN_WIDTH / 2) + 'px;' + 'top: ' + (pin.location.y - PIN_HEIGHT) + 'px;';
-    pinElement.querySelector('img').src = pin.author.avatar;
-    pinElement.querySelector('img').alt = pin.offer.title;
-    pinElement.addEventListener('click', function () { // функция для генерации слушателя для каждого пина
-      if (activePin !== null) { // смена стиля пина при нажатии
-        activePin.classList.remove('map__pin--active');
-      }
-      activePin = pinElement;
-      pinElement.classList.add('map__pin--active');
-      window.adds.showAd(window.adds.similarAds[pin.id.pin]); // добавление информации в объявление
-    });
+    pinElement.style = 'left: ' + (ad.location.x - PIN_WIDTH / 2) + 'px;' + 'top: ' + (ad.location.y - PIN_HEIGHT) + 'px;';
+    pinElement.querySelector('img').src = ad.author.avatar;
+    pinElement.querySelector('img').alt = ad.offer.title;
+
     if (showedAd !== null) { // убирает выделение пина по закрытию окна
       var closeButton = showedAd.querySelector('.popup__close');
       var removeActive = function (evt) {
@@ -45,6 +37,16 @@
         pinElement.classList.remove('map__pin--active');
       });
     }
+
+    pinElement.addEventListener('click', function () { // функция для генерации слушателя для каждого пина
+      if (activePin !== null) { // смена стиля пина при нажатии
+        activePin.classList.remove('map__pin--active');
+      }
+      activePin = pinElement;
+      pinElement.classList.add('map__pin--active');
+      window.adds.showAd(ad);
+    });
+
     return pinElement;
   };
 
@@ -101,12 +103,13 @@
     document.addEventListener('mouseup', onMouseUp);
   });
 
+
   window.pins = {
     mainPin: mainPin,
     allPins: allPins,
-    insertPins: function () { // добавляем все пины
-      for (var i = 0; i < window.adds.similarAds.length; i++) { // проходимся по всему массиву
-        fragmentPins.appendChild(renderPin(window.adds.similarAds[i])); // добавляем пин во фрагмент
+    insertPins: function (ad) { // добавляем все пины
+      for (var i = 0; i < 5; i++) { // проходимся по всему массиву
+        fragmentPins.appendChild(renderPin(ad[i])); // добавляем пин во фрагмент
       }
       allPins.appendChild(fragmentPins); // записываем пины во фрагмент
       mapPins.appendChild(allPins); // вставляем фрагмент пинов в html

@@ -7,6 +7,9 @@
   var pinButtonLocation = pinPikeX + ' , ' + pinPikeY;
   var userForm = document.querySelector('.ad-form');
   var formFieldset = userForm.querySelectorAll('fieldset');
+  var adTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
+      .content // обращаемся к обертке
+      .querySelector('.map__card'); // и к элементам внутри обертки
 
   // ФУНКЦИИ ДЛЯ РАБОТЫ СО СТРАНИЦЕЙ
 
@@ -28,16 +31,21 @@
     userForm.classList.remove('ad-form--disabled');
   };
 
-  window.adds.generateSimilarAds(); // сгенерировали 8 похожишь объявлений
-  // switchGroupElementsClasses(window.pins.allPins, 'map__pin--active'); // добавили переключатель классов между пинами
+  var renderAd = function () { // функция для генирации одного объявления в темплейт на осове данных из массива
+    var adElement = adTemplate.cloneNode(true); // копируем теиплейт
+    window.util.tokyoMap.appendChild(adElement);
+    var firstAdd = window.util.tokyoMap.querySelector('article');
+    firstAdd.classList.add('hidden');
+  };
+
   window.util.addTextInField(window.util.addressField, pinButtonLocation); // добавили адрес в форму
   addFormDisabled(); // заблокировали форму
 
   window.pins.mainPin.addEventListener('mousedown', function () { // перевели все в активное состояние по опусканию пина
     cancelPageInactive(); // разблокировали форму
-    window.pins.insertPins(); // сгененрировали и добавили пины
+    renderAd();
+    window.backend.load(window.pins.insertPins, window.backend.onErrorMessage);
+    window.adds.adClose();
   });
-  window.adds.renderAd();
-  window.adds.adClose(); // добавлены обработчики закрытия
 
 })();

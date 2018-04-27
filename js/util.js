@@ -7,5 +7,6 @@
     addTextInField: function (where, what) { // добавление текста в поле
       where.value = what;
     },
+
   };
 })();
