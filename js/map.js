@@ -1,10 +1,7 @@
 'use strict';
 
 (function () {
-  var PIN_BUTTON_SIZE = 65;
-  var pinPikeX = parseInt(window.pins.mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2;
-  var pinPikeY = parseInt(window.pins.mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2;
-  var pinButtonLocation = pinPikeX + ' , ' + pinPikeY;
+
   var userForm = document.querySelector('.ad-form');
   var formFieldset = userForm.querySelectorAll('fieldset');
   var adTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
@@ -38,7 +35,7 @@
     firstAdd.classList.add('hidden');
   };
 
-  window.util.addTextInField(window.util.addressField, pinButtonLocation); // добавили адрес в форму
+  window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation); // добавили адрес в форму
   addFormDisabled(); // заблокировали форму
 
   window.pins.mainPin.addEventListener('mousedown', function () { // перевели все в активное состояние по опусканию пина

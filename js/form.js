@@ -97,10 +97,13 @@
     }
   });
 
+  var resetForm = function () {
+    form.reset();
+    window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation);
+  };
+
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    window.backend.save(new FormData(form), function () {
-      formTitle.removeAttribute('value');
-    });
+    window.backend.save(new FormData(form), resetForm, window.backend.onErrorMessage);
   });
 })();

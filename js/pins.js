@@ -3,9 +3,14 @@
 (function () {
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
-
+  var PIN_BUTTON_SIZE = 65;
   var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
   var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
+  var pinPikeX = parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2;
+  var pinPikeY = parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2;
+  var pinButtonLocation = pinPikeX + ' , ' + pinPikeY;
+
+
   var activePin = null;
 
   // ТЕМПЛЕЙТЫ
@@ -107,9 +112,10 @@
   window.pins = {
     mainPin: mainPin,
     allPins: allPins,
-    insertPins: function (ad) { // добавляем все пины
+    pinButtonLocation: pinButtonLocation,
+    insertPins: function (ads) { // добавляем все пины
       for (var i = 0; i < 5; i++) { // проходимся по всему массиву
-        fragmentPins.appendChild(renderPin(ad[i])); // добавляем пин во фрагмент
+        fragmentPins.appendChild(renderPin(ads[i])); // добавляем пин во фрагмент
       }
       allPins.appendChild(fragmentPins); // записываем пины во фрагмент
       mapPins.appendChild(allPins); // вставляем фрагмент пинов в html
