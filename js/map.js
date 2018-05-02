@@ -25,9 +25,9 @@
 
   window.pins.mainPin.addEventListener('mousedown', function () { // перевели все в активное состояние по опусканию пина
     cancelPageInactive(); // разблокировали форму
-    renderAd();
     window.backend.load(window.pins.insertPins, window.backend.onErrorMessage);
-    window.adds.adClose();
   });
+  renderAd();
+  window.adds.adClose();
 
 })();
