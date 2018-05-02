@@ -20,7 +20,7 @@
           error = 'Ничего не найдено';
           break;
         default:
-          error = 'Статус ответа: : ' + xhr.status + ' ' + xhr.statusText;
+          error = 'Статус ответа: ' + xhr.status + ' ' + xhr.statusText;
       }
       if (error) {
         onError(error);
@@ -53,14 +53,15 @@
     onErrorMessage: function (errorMessage) {
       var node = document.createElement('div');
       node.style.zIndex = 100;
+      node.style.width = '50%';
+      node.style.transform = 'translateX(-50%) translateY(-50%)';
       node.style.margin = '0 auto';
       node.style.textAlign = 'center';
-      node.style.backgroundColor = '#dd1f1f';
-      node.style.border = '2px solid #fff';
+      node.style.backgroundColor = '#e74c3c';
       node.style.fontWeight = 'bold';
-      node.style.position = 'absolute';
-      node.style.left = 0;
-      node.style.right = 0;
+      node.style.position = 'fixed';
+      node.style.top = '50%';
+      node.style.left = '50%';
       node.style.fontSize = '28px';
       node.textContent = errorMessage;
       document.body.insertAdjacentElement('afterbegin', node);

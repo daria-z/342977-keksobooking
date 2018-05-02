@@ -3,13 +3,32 @@
 (function () {
   // ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
   var form = document.querySelector('.ad-form');
-  var formTitle = document.getElementById('title');
-  var formType = document.getElementById('type');
-  var formPrice = document.getElementById('price');
-  var formCheckIn = document.getElementById('timein');
-  var formCheckOut = document.getElementById('timeout');
-  var formRooms = document.getElementById('room_number');
-  var formGuests = document.getElementById('capacity');
+  var formType = form.querySelector('#type');
+  var formPrice = form.querySelector('#price');
+  var formCheckIn = form.querySelector('#timein');
+  var formCheckOut = form.querySelector('#timeout');
+  var formRooms = form.querySelector('#room_number');
+  var formGuests = form.querySelector('#capacity');
+  var formFieldset = form.querySelectorAll('fieldset');
+
+  window.form = {
+    addFormDisabled: function () { // добавляет неактивное состояние формы
+      for (var i = 0; i < formFieldset.length; i++) {
+        formFieldset[i].disabled = 'true';
+      }
+    },
+    removeFormDisabled: function () { // отменяет неактивное состояние формы
+      for (var i = 0; i < formFieldset.length; i++) {
+        formFieldset[i].disabled = '';
+      }
+      form.classList.remove('ad-form--disabled');
+    }
+  };
+
+  var resetForm = function () {
+    form.reset();
+    window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation);
+  };
 
   formType.addEventListener('input', function () { // соответствие цены и типа жилья
     if (formType.value === 'bungalo') {
@@ -97,13 +116,21 @@
     }
   });
 
-  var resetForm = function () {
-    form.reset();
-    window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation);
-  };
+
+  form.addEventListener('reset', function () {
+    resetForm();
+    window.form.addFormDisabled();
+    var pinsFragment = window.util.tokyoMap.querySelector('.map__allPins');
+    var adFragment = window.util.tokyoMap.querySelector('.map__card');
+    window.util.tokyoMap.removeChild(adFragment);
+    window.util.tokyoMap.removeChild(pinsFragment);
+    window.util.tokyoMap.classList.add('map--faded');
+  });
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.save(new FormData(form), resetForm, window.backend.onErrorMessage);
+    var successMessage = document.querySelector('.success');
+    successMessage.classList.remove('hidden');
   });
 })();

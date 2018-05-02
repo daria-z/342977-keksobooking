@@ -20,6 +20,7 @@
 
   // НОВЫЕ, СГЕНЕРИРОВАННЫЕ ОБЪЕКТЫ
   var allPins = document.createElement('div'); // создали переменную в которую сложим сгенерированные пины
+  allPins.classList.add('map__allPins');
   var fragmentPins = document.createDocumentFragment(); // создали фрагмент для вставки всех пинов за раз
 
   var renderPin = function (ad) { // функция для генирации одного пина
@@ -113,6 +114,7 @@
     mainPin: mainPin,
     allPins: allPins,
     pinButtonLocation: pinButtonLocation,
+    // pinsFragment: window.util.tokyoMap.querySelector('.pins-fragment'),
     insertPins: function (ads) { // добавляем все пины
       for (var i = 0; i < 5; i++) { // проходимся по всему массиву
         fragmentPins.appendChild(renderPin(ads[i])); // добавляем пин во фрагмент
