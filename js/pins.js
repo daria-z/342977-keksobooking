@@ -5,7 +5,7 @@
   var PIN_HEIGHT = 70;
   var PIN_BUTTON_SIZE = 65;
   var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
-  var mainPin = mapPins.querySelector('.map__pin, .map-pin--main');
+  var mainPin = mapPins.querySelector('.map__pin--main');
   var pinPikeX = parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2;
   var pinPikeY = parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2;
   var pinButtonLocation = pinPikeX + ' , ' + pinPikeY;
@@ -71,10 +71,10 @@
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
       var mapCoords = window.util.tokyoMap.querySelector('.map__overlay').getBoundingClientRect();
-      var mapMinX = (mapCoords.x - mapCoords.left) - (PIN_WIDTH / 2);
-      var mapMaxX = mapCoords.height - (PIN_HEIGHT / 2);
-      var mapMinY = mapCoords.y;
-      var mapMaxY = mapCoords.width - (PIN_WIDTH / 2);
+      var mapMinX = mapCoords.x - mapCoords.left - (PIN_WIDTH / 2);
+      var mapMaxX = mapCoords.width - (PIN_WIDTH / 2);
+      var mapMinY = 500 + PIN_HEIGHT;
+      var mapMaxY = 150 + PIN_HEIGHT;
 
       var shift = {
         x: startCoords.x - moveEvt.clientX,
@@ -89,7 +89,7 @@
       var pinTop = mainPin.offsetTop - shift.y;
       var pinLeft = mainPin.offsetLeft - shift.x;
 
-      if (pinLeft > mapMinX && pinLeft < mapMaxY && pinTop > mapMinY && pinTop < mapMaxX) {
+      if (pinLeft > mapMinX && pinLeft < mapMaxX && pinTop < mapMinY && pinTop > mapMaxY) {
         mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
         mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
       }

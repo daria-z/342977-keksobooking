@@ -23,7 +23,7 @@
   window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation); // добавили адрес в форму
   window.form.addFormDisabled(); // заблокировали форму
 
-  window.pins.mainPin.addEventListener('mousedown', function () { // перевели все в активное состояние по опусканию пина
+  window.pins.mainPin.addEventListener('click', function () { // перевели все в активное состояние по опусканию пина
     cancelPageInactive(); // разблокировали форму
     window.backend.load(window.pins.insertPins, window.backend.onErrorMessage);
   });
