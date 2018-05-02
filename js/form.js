@@ -10,6 +10,7 @@
   var formRooms = form.querySelector('#room_number');
   var formGuests = form.querySelector('#capacity');
   var formFieldset = form.querySelectorAll('fieldset');
+  var allPinsParent = window.util.tokyoMap.querySelector('.map__pins');
 
   window.form = {
     addFormDisabled: function () { // добавляет неактивное состояние формы
@@ -118,13 +119,14 @@
 
 
   form.addEventListener('reset', function () {
-    resetForm();
-    window.form.addFormDisabled();
-    var pinsFragment = window.util.tokyoMap.querySelector('.map__allPins');
+    var pinsFragment = allPinsParent.querySelector('.map__allPins');
     var adFragment = window.util.tokyoMap.querySelector('.map__card');
+    allPinsParent.removeChild(pinsFragment);
     window.util.tokyoMap.removeChild(adFragment);
-    window.util.tokyoMap.removeChild(pinsFragment);
-    window.util.tokyoMap.classList.add('map--faded');
+    resetForm();
+    window.util.setStartCondition();
+    window.util.renderAd();
+    window.adds.adClose();
   });
 
   form.addEventListener('submit', function (evt) {
