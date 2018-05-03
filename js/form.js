@@ -2,12 +2,34 @@
 
 (function () {
   // ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
-  var formType = document.getElementById('type');
-  var formPrice = document.getElementById('price');
-  var formCheckIn = document.getElementById('timein');
-  var formCheckOut = document.getElementById('timeout');
-  var formRooms = document.getElementById('room_number');
-  var formGuests = document.getElementById('capacity');
+  var form = document.querySelector('.ad-form');
+  var formType = form.querySelector('#type');
+  var formPrice = form.querySelector('#price');
+  var formCheckIn = form.querySelector('#timein');
+  var formCheckOut = form.querySelector('#timeout');
+  var formRooms = form.querySelector('#room_number');
+  var formGuests = form.querySelector('#capacity');
+  var formFieldset = form.querySelectorAll('fieldset');
+  var allPinsParent = window.util.tokyoMap.querySelector('.map__pins');
+
+  window.form = {
+    addFormDisabled: function () { // добавляет неактивное состояние формы
+      for (var i = 0; i < formFieldset.length; i++) {
+        formFieldset[i].disabled = 'true';
+      }
+    },
+    removeFormDisabled: function () { // отменяет неактивное состояние формы
+      for (var i = 0; i < formFieldset.length; i++) {
+        formFieldset[i].disabled = '';
+      }
+      form.classList.remove('ad-form--disabled');
+    }
+  };
+
+  var resetForm = function () {
+    form.reset();
+    window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation);
+  };
 
   formType.addEventListener('input', function () { // соответствие цены и типа жилья
     if (formType.value === 'bungalo') {
@@ -93,5 +115,24 @@
       formGuests.options[2].disabled = 'true'; // 1 гость
       formGuests.options[3].disabled = ''; // не для гостей
     }
+  });
+
+
+  form.addEventListener('reset', function () {
+    var pinsFragment = allPinsParent.querySelector('.map__allPins');
+    var adFragment = window.util.tokyoMap.querySelector('.map__card');
+    allPinsParent.removeChild(pinsFragment);
+    window.util.tokyoMap.removeChild(adFragment);
+    resetForm();
+    window.util.setStartCondition();
+    window.util.renderAd();
+    window.adds.adClose();
+  });
+
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(form), resetForm, window.backend.onErrorMessage);
+    var successMessage = document.querySelector('.success');
+    successMessage.classList.remove('hidden');
   });
 })();
