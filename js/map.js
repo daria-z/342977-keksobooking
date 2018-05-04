@@ -18,7 +18,6 @@
   var housingElevator = mapFilters.querySelector('#filter-elevator');
   var housingConditioner = mapFilters.querySelector('#filter-conditioner');
 
-var filterNotices = [];
   var updateAdds = function (data) {
     var backendAdds = data;
     switch (housingType.value) {
@@ -158,18 +157,14 @@ var filterNotices = [];
 
     var lastArr = conditionerArr;
 
-    console.log(data);
-    console.log(lastArr);
-    filterNotices = lastArr;
-    console.log(filterNotices);
-    window.pins.insertPins(filterNotices);
+    window.pins.insertPins(lastArr);
   };
 
 
   housingType.addEventListener('input', function () {
     if (window.pins.allPins === null) {
-      window.backend.load(updateAdds, window.backend.onErrorMessage);
       window.adds.renderFirstNotice();
+      window.backend.load(updateAdds, window.backend.onErrorMessage);
     } else {
       window.util.resetPins();
       window.util.resetNotice();
