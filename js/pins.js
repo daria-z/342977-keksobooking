@@ -50,10 +50,18 @@
       }
       activePin = pinElement;
       pinElement.classList.add('map__pin--active');
-      window.adds.showAd(ad);
+      window.adds.getTextInNotice(ad);
     });
 
     return pinElement;
+  };
+
+  var insertPins = function (ads) { // добавляем все пины
+    for (var i = 0; i < 5; i++) { // проходимся по всему массиву
+      fragmentPins.appendChild(renderPin(ads[i])); // добавляем пин во фрагмент
+    }
+    allPins.appendChild(fragmentPins); // записываем пины во фрагмент
+    mapPins.appendChild(allPins); // вставляем фрагмент пинов в html
   };
 
   // ПОДСЧЕТ АДРЕСА МЕТКИ
@@ -114,13 +122,8 @@
     mainPin: mainPin,
     allPins: allPins,
     pinButtonLocation: pinButtonLocation,
+    renderPin: renderPin,
     // pinsFragment: window.util.tokyoMap.querySelector('.pins-fragment'),
-    insertPins: function (ads) { // добавляем все пины
-      for (var i = 0; i < 5; i++) { // проходимся по всему массиву
-        fragmentPins.appendChild(renderPin(ads[i])); // добавляем пин во фрагмент
-      }
-      allPins.appendChild(fragmentPins); // записываем пины во фрагмент
-      mapPins.appendChild(allPins); // вставляем фрагмент пинов в html
-    }
+    insertPins: insertPins
   };
 })();
