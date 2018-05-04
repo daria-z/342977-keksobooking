@@ -144,45 +144,97 @@
     return workingArray;
   };
 
+  var lastTimeout;
+
 
   housingType.addEventListener('input', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingPrice.addEventListener('input', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingRooms.addEventListener('input', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingGuests.addEventListener('input', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingWiFi.addEventListener('click', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingDishwasher.addEventListener('click', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingParking.addEventListener('click', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingWasher.addEventListener('click', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingElevator.addEventListener('click', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
   housingConditioner.addEventListener('click', function () {
     window.util.resetMap();
-    updateAdds(backendArr);
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      updateAdds(backendArr);
+    }, 500);
   });
 })();
