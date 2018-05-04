@@ -10,6 +10,7 @@
   var formRooms = form.querySelector('#room_number');
   var formGuests = form.querySelector('#capacity');
   var formFieldset = form.querySelectorAll('fieldset');
+  var successMessage = document.querySelector('.success');
 
 
   window.form = {
@@ -118,19 +119,20 @@
   });
 
 
+  var deleteSuccessMessage = function () {
+    successMessage.classList.add('hidden');
+  };
+
   form.addEventListener('reset', function () {
-    window.util.resetPins();
-    window.util.resetNotice();
+    window.util.resetMap();
     resetForm();
     window.util.setStartCondition();
-    window.adds.renderFirstNotice();
-    window.adds.adClose();
   });
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.save(new FormData(form), resetForm, window.backend.onErrorMessage);
-    var successMessage = document.querySelector('.success');
     successMessage.classList.remove('hidden');
+    setTimeout(deleteSuccessMessage, 1500);
   });
 })();

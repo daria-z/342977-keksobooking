@@ -57,7 +57,7 @@
   };
 
   var insertPins = function (ads) { // добавляем все пины
-    for (var i = 0; i < 5; i++) { // проходимся по всему массиву
+    for (var i = 0; (i < ads.length) && (i < 5); i++) { // проходимся по всему массиву
       fragmentPins.appendChild(renderPin(ads[i])); // добавляем пин во фрагмент
     }
     allPins.appendChild(fragmentPins); // записываем пины во фрагмент
@@ -121,6 +121,7 @@
   window.pins = {
     mainPin: mainPin,
     allPins: allPins,
+    fragmentPins: fragmentPins,
     pinButtonLocation: pinButtonLocation,
     renderPin: renderPin,
     // pinsFragment: window.util.tokyoMap.querySelector('.pins-fragment'),

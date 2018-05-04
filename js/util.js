@@ -27,14 +27,22 @@
   };
 
   var resetPins = function () {
+    window.util.fragmentPins = null;
     var allPinsParent = window.util.tokyoMap.querySelector('.map__pins');
     var pinsFragment = allPinsParent.querySelector('.map__allPins');
-    allPinsParent.removeChild(pinsFragment);
+    window.adds.removeAllChildren(pinsFragment);
   };
 
   var resetNotice = function () {
     var noticeFragment = window.util.tokyoMap.querySelector('.map__card');
     window.util.tokyoMap.removeChild(noticeFragment);
+  };
+
+  var resetMap = function () {
+    resetPins();
+    resetNotice();
+    window.adds.renderFirstNotice();
+    window.adds.adClose();
   };
 
 
@@ -43,7 +51,6 @@
     addressField: document.getElementById('address'),
     addTextInField: addTextInField,
     setStartCondition: setStartCondition,
-    resetPins: resetPins,
-    resetNotice: resetNotice
+    resetMap: resetMap
   };
 })();

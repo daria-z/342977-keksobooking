@@ -86,6 +86,7 @@
     showedAd: window.util.tokyoMap.querySelector('article'),
     renderFirstNotice: renderFirstNotice,
     getTextInNotice: getTextInNotice,
+    removeAllChildren: removeAllChildren,
     onAdEscPress: function (evt) {
       if (evt.keyCode === 27) {
         window.adds.closeAd();
