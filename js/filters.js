@@ -111,12 +111,12 @@
     housingPrice.value = 'any';
     housingRooms.value = 'any';
     housingGuests.value = 'any';
-    housingWiFi.checked = 'false';
-    housingDishwasher.checked = 'false';
-    housingParking.checked = 'false';
-    housingWasher.checked = 'false';
-    housingElevator.checked = 'false';
-    housingConditioner.checked = 'false';
+    housingWiFi.checked = false;
+    housingDishwasher.checked = false;
+    housingParking.checked = false;
+    housingWasher.checked = false;
+    housingElevator.checked = false;
+    housingConditioner.checked = false;
   };
 
   var lastTimeout;

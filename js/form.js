@@ -131,12 +131,14 @@
   form.addEventListener('submit', function (evt) { // все события при отправке формы
     evt.preventDefault();
     window.backend.save(new FormData(form), resetForm, window.backend.onErrorMessage);
-    successMessage.classList.remove('hidden');
-    setTimeout(deleteSuccessMessage, 1500);
+    // successMessage.classList.remove('hidden');
+    // setTimeout(deleteSuccessMessage, 1500);
   });
 
   window.form = {
     form: form,
+    successMessage: successMessage,
+    deleteSuccessMessage: deleteSuccessMessage,
     addFormDisabled: addFormDisabled,
     removeFormDisabled: removeFormDisabled
   };
