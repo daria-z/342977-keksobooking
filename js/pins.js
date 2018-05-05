@@ -1,15 +1,17 @@
 'use strict';
 
 (function () {
+  var MAP_MAX_X = 500;
+  var MAP_MIN_X = 150;
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
   var PIN_BUTTON_SIZE = 65;
+  var PINS_LIMIT = 5;
   var mapPins = document.querySelector('.map__pins'); // нашли блок map__pins
   var mainPin = mapPins.querySelector('.map__pin--main');
   var pinPikeX = parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2;
   var pinPikeY = parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2;
   var pinButtonLocation = pinPikeX + ' , ' + pinPikeY;
-
 
   var activePin = null;
 
@@ -34,7 +36,7 @@
     if (showedAd !== null) { // убирает выделение пина по закрытию окна
       var closeButton = showedAd.querySelector('.popup__close');
       var removeActive = function (evt) {
-        if (evt.keyCode === 27) {
+        if (evt.keyCode === window.util.ESC_KEY) {
           pinElement.classList.remove('map__pin--active');
         }
       };
@@ -57,7 +59,8 @@
   };
 
   var insertPins = function (ads) { // добавляем все пины
-    for (var i = 0; (i < ads.length) && (i < 5); i++) { // проходимся по всему массиву
+    var limitAdds = ads.length < PINS_LIMIT ? ads.length : PINS_LIMIT;
+    for (var i = 0; i < limitAdds; i++) { // проходимся по всему массиву
       fragmentPins.appendChild(renderPin(ads[i])); // добавляем пин во фрагмент
     }
     allPins.appendChild(fragmentPins); // записываем пины во фрагмент
@@ -81,8 +84,8 @@
       var mapCoords = window.util.tokyoMap.querySelector('.map__overlay').getBoundingClientRect();
       var mapMinX = mapCoords.x - mapCoords.left - (PIN_WIDTH / 2);
       var mapMaxX = mapCoords.width - (PIN_WIDTH / 2);
-      var mapMinY = 500 + PIN_HEIGHT;
-      var mapMaxY = 150 + PIN_HEIGHT;
+      var mapMinY = MAP_MAX_X + PIN_HEIGHT;
+      var mapMaxY = MAP_MIN_X + PIN_HEIGHT;
 
       var shift = {
         x: startCoords.x - moveEvt.clientX,
@@ -124,7 +127,6 @@
     fragmentPins: fragmentPins,
     pinButtonLocation: pinButtonLocation,
     renderPin: renderPin,
-    // pinsFragment: window.util.tokyoMap.querySelector('.pins-fragment'),
     insertPins: insertPins
   };
 })();

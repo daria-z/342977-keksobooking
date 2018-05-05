@@ -1,16 +1,12 @@
 'use strict';
 
 (function () {
+  var NOTICE_PHOTO_WIDTH = 45;
+  var NOTICE_PHOTO_HEIGHT = 40;
 
   var noticeTemplate = document.querySelector('template') // находим шаблон объявления и записываем в переменную
       .content // обращаемся к обертке
       .querySelector('.map__card'); // и к элементам внутри обертки
-
-  var removeAllChildren = function (parent) { // удаляет всех детей parent
-    while (parent.lastChild) {
-      parent.removeChild(parent.lastChild);
-    }
-  };
 
   var pickUpNumeEnding = function (number, titles) { // функция для генерации окончаний числительных
     var cases = [2, 0, 1, 1, 1, 2];
@@ -36,16 +32,17 @@
     window.util.tokyoMap.appendChild(adElement);
     var firstNotice = window.util.tokyoMap.querySelector('article');
     firstNotice.classList.add('hidden');
+    noticeClose(); // навесили слушатели на закрытие объявления
   };
 
-  var getTextInNotice = function (ad) {
+  var getTextInNotice = function (ad) { // генерация текста в объявление по массиву
     var adElement = window.util.tokyoMap.querySelector('article');
     var featuresList = adElement.querySelector('.popup__features'); // список фич
     var roomsNumeral = pickUpNumeEnding(ad.offer.rooms, ['комната', 'комнаты', 'комнат']);
     var guestsNumeral = pickUpNumeEnding(ad.offer.guests, ['гостя', 'гостей', 'гостей']);
     var photosList = adElement.querySelector('.popup__photos');
     var createFeaturesList = function () {
-      removeAllChildren(featuresList); // удаляем дочерние элементы списка фич из темплейта
+      window.util.removeAllChildren(featuresList); // удаляем дочерние элементы списка фич из темплейта
       for (var j = 0; j < ad.offer.features.length; j++) { // создаем и добавляем нужное количество фич в список
         var featuresListItem = document.createElement('li');
         featuresListItem.className = 'popup__feature popup__feature--' + ad.offer.features[j];
@@ -53,13 +50,13 @@
       }
     };
     var createPhotosList = function () {
-      removeAllChildren(photosList);
+      window.util.removeAllChildren(photosList);
       for (var i = 0; i < ad.offer.photos.length; i++) { // увеличили количество img до нужного числа
         var onePhoto = document.createElement('img');
         photosList.appendChild(onePhoto);
         onePhoto.className = 'popup__photo';
-        onePhoto.width = 45;
-        onePhoto.height = 40;
+        onePhoto.width = NOTICE_PHOTO_WIDTH;
+        onePhoto.height = NOTICE_PHOTO_HEIGHT;
         onePhoto.alt = 'Фотография жилья';
         onePhoto.src = ad.offer.photos[i];
       }
@@ -78,31 +75,33 @@
     if (adElement.classList.contains('hidden')) {
       adElement.classList.remove('hidden');
     }
-    document.addEventListener('keydown', window.adds.onAdEscPress);
+    document.addEventListener('keydown', onNoticeEscPress);
     return adElement;
+  };
+
+  var noticeKeybordClose = function () { // закрытие объявление по esc
+    var showedAd = document.querySelector('article');
+    showedAd.classList.add('hidden');
+    document.removeEventListener('keydown', onNoticeEscPress);
+  };
+
+  var onNoticeEscPress = function (evt) {
+    if (evt.keyCode === window.util.ESC_KEY) {
+      noticeKeybordClose();
+    }
+  };
+
+  var noticeClose = function () { // закрытие объявления
+    var showedAd = document.querySelector('article');
+    var closeButton = showedAd.querySelector('.popup__close');
+    closeButton.addEventListener('click', function () {
+      noticeKeybordClose();
+    });
   };
 
   window.adds = {
     showedAd: window.util.tokyoMap.querySelector('article'),
     renderFirstNotice: renderFirstNotice,
-    getTextInNotice: getTextInNotice,
-    removeAllChildren: removeAllChildren,
-    onAdEscPress: function (evt) {
-      if (evt.keyCode === 27) {
-        window.adds.closeAd();
-      }
-    },
-    closeAd: function () {
-      var showedAd = document.querySelector('article');
-      showedAd.classList.add('hidden');
-      document.removeEventListener('keydown', window.adds.onAdEscPress);
-    },
-    adClose: function () {
-      var showedAd = document.querySelector('article');
-      var closeButton = showedAd.querySelector('.popup__close');
-      closeButton.addEventListener('click', function () {
-        window.adds.closeAd();
-      });
-    }
+    getTextInNotice: getTextInNotice
   };
 })();

@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  window.util.setStartCondition();
-  window.adds.renderFirstNotice();
-  window.adds.adClose();
+  window.util.setStartCondition(); // заблокировали страницу
+  window.adds.renderFirstNotice(); // сгенерировали первое скрытое объявление
 })();

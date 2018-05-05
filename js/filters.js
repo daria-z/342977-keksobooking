@@ -18,9 +18,20 @@
   var downloadArray = function (data) {
     backendArr = data;
   };
-  window.backend.load(downloadArray, window.backend.onErrorMessage);
+  window.backend.load(downloadArray, window.backend.onErrorMessage); // скачали данные с сервера
 
-  var updateAdds = function (data) {
+  var filterAdFeatures = function (arrAds) { // фильтр по чекбоксам
+    var featuresChecked = mapFilters.querySelectorAll('#housing-features [type="checkbox"]:checked'); // выбираем все отмеченные удобства в массив
+    var featuresChoice = arrAds;
+    [].forEach.call(featuresChecked, function (item) { //  для каждого отмеченного удобства запускаем фильтр по массиву объявлений
+      featuresChoice = featuresChoice.filter(function (it) {
+        return it.offer.features.indexOf(item.value) >= 0;
+      });
+    });
+    return featuresChoice;
+  };
+
+  var updateAdds = function (data) { // фильтр по селектам
     var workingArray = data.slice();
 
     switch (housingType.value) {
@@ -90,63 +101,27 @@
         break;
     }
 
-    // if (housingWiFi.checked) {
-    //   var wifiArr = guestsArr.filter(function (ad) {
-    //     return ad.offer.features === 'wifi';
-    //   });
-    // }
-    //
-    // if (housingDishwasher.checked) {
-    //   workingArray = workingArray.filter(function (ad) {
-    //     return ad.offer.features === 'dishwasher';
-    //   });
-    // }
-    //
-    //
-    // if (housingParking.checked) {
-    //   workingArray = workingArray.filter(function (ad) {
-    //     return ad.offer.features === 'parking';
-    //   });
-    // }
-    //
-    // if (housingWasher.checked) {
-    //   workingArray = workingArray.filter(function (ad) {
-    //     return ad.offer.features === 'washer';
-    //   });
-    // }
-    //
-    // if (housingElevator.checked) {
-    //   workingArray = workingArray.filter(function (ad) {
-    //     return ad.offer.features === 'elevator';
-    //   });
-    // }
-    //
-    // if (housingConditioner.checked) {
-    //   workingArray = workingArray.filter(function (ad) {
-    //     return ad.offer.features === 'conditioner';
-    //   });
-    // }
-    //
-    // arrAds -  массив прошедший предыдущие фильтры
-    var filterAdFeatures = function (arrAds) {
-      var featuresChecked = mapFilters.querySelectorAll('#housing-features [type="checkbox"]:checked'); // выбираем все отмеченные удобства в массив
-      var featuresChoice = arrAds;
-      [].forEach.call(featuresChecked, function (item) { //  для каждого отмеченного удобства запускаем фильтр по массиву объявлений
-        featuresChoice = featuresChoice.filter(function (it) {
-          return it.offer.features.indexOf(item.value) >= 0;
-        });
-      });
-      return featuresChoice;
-    };
-    filterAdFeatures(workingArray);
+    workingArray = filterAdFeatures(workingArray);
     window.pins.insertPins(workingArray);
-    // window.adds.getTextInNotice(workingArray);
     return workingArray;
+  };
+
+  var resetFilters = function () { // сброс фильтров
+    housingType.value = 'any';
+    housingPrice.value = 'any';
+    housingRooms.value = 'any';
+    housingGuests.value = 'any';
+    housingWiFi.checked = 'false';
+    housingDishwasher.checked = 'false';
+    housingParking.checked = 'false';
+    housingWasher.checked = 'false';
+    housingElevator.checked = 'false';
+    housingConditioner.checked = 'false';
   };
 
   var lastTimeout;
 
-
+  // СЛУШАТЕЛИ ФИЛЬТРОВ
   housingType.addEventListener('input', function () {
     window.util.resetMap();
     if (lastTimeout) {
@@ -237,4 +212,8 @@
       updateAdds(backendArr);
     }, 500);
   });
+
+  window.filters = {
+    resetFilters: resetFilters
+  };
 })();

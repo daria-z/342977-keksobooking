@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  // ФУНКЦИИ ДЛЯ РАБОТЫ С ФОРМОЙ
   var form = document.querySelector('.ad-form');
   var formType = form.querySelector('#type');
   var formPrice = form.querySelector('#price');
@@ -11,26 +10,6 @@
   var formGuests = form.querySelector('#capacity');
   var formFieldset = form.querySelectorAll('fieldset');
   var successMessage = document.querySelector('.success');
-
-
-  window.form = {
-    addFormDisabled: function () { // добавляет неактивное состояние формы
-      for (var i = 0; i < formFieldset.length; i++) {
-        formFieldset[i].disabled = 'true';
-      }
-    },
-    removeFormDisabled: function () { // отменяет неактивное состояние формы
-      for (var i = 0; i < formFieldset.length; i++) {
-        formFieldset[i].disabled = '';
-      }
-      form.classList.remove('ad-form--disabled');
-    }
-  };
-
-  var resetForm = function () {
-    form.reset();
-    window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation);
-  };
 
   formType.addEventListener('input', function () { // соответствие цены и типа жилья
     if (formType.value === 'bungalo') {
@@ -68,7 +47,7 @@
     }
   });
 
-  formGuests.addEventListener('input', function () { // соответсвие количества комнат и жильцов реализация без учета 100 комнат
+  formGuests.addEventListener('input', function () { // соответсвие кол-ва гостей комнатам
     if (formGuests.value === '0' && formRooms.value !== '100') {
       formGuests.valid = '';
       formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
@@ -81,7 +60,7 @@
     }
   });
 
-  formRooms.addEventListener('input', function () {
+  formRooms.addEventListener('input', function () { // соответсвие кол-ва гостей комнатам
     if (formGuests.value === '0' && formRooms.value !== '100') {
       formGuests.valid = '';
       formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
@@ -94,7 +73,7 @@
     }
   });
 
-  formRooms.addEventListener('input', function () { // соответсвие количества комнат и жильцов реализация без учета 100 комнат
+  formRooms.addEventListener('input', function () { // блокировка выбора не подходящих условий
     if (formRooms.value === '1') {
       formGuests.options[0].disabled = 'true'; // 3 гостя
       formGuests.options[1].disabled = 'true'; // 2 гостя
@@ -118,21 +97,47 @@
     }
   });
 
+  var addFormDisabled = function () { // заблокировали форму
+    for (var i = 0; i < formFieldset.length; i++) {
+      formFieldset[i].disabled = 'true';
+    }
+  };
 
-  var deleteSuccessMessage = function () {
+  var removeFormDisabled = function () { // отменяет неактивное состояние формы
+    for (var i = 0; i < formFieldset.length; i++) {
+      formFieldset[i].disabled = '';
+    }
+    form.classList.remove('ad-form--disabled');
+  };
+
+  var resetForm = function () { // сброс формы
+    form.reset();
+    window.util.removeAllChildren(window.photo.previewPlace);
+    window.filters.resetFilters();
+    window.photo.previewAvatar.src = 'img/muffin-grey.svg';
+    window.util.addTextInField(window.util.addressField, window.pins.pinButtonLocation);
+  };
+
+  var deleteSuccessMessage = function () { // удаление сообщения об успешной отпрвке
     successMessage.classList.add('hidden');
   };
 
-  form.addEventListener('reset', function () {
+  form.addEventListener('reset', function () { // все события при сбросе формы
     window.util.resetMap();
     resetForm();
     window.util.setStartCondition();
   });
 
-  form.addEventListener('submit', function (evt) {
+  form.addEventListener('submit', function (evt) { // все события при отправке формы
     evt.preventDefault();
     window.backend.save(new FormData(form), resetForm, window.backend.onErrorMessage);
     successMessage.classList.remove('hidden');
     setTimeout(deleteSuccessMessage, 1500);
   });
+
+  window.form = {
+    form: form,
+    addFormDisabled: addFormDisabled,
+    removeFormDisabled: removeFormDisabled
+  };
 })();
