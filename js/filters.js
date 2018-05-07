@@ -33,39 +33,26 @@
 
   var updateAdds = function (data) { // фильтр по селектам
     var workingArray = data.slice();
-
-
     var filterSelects = function (type, what) {
       workingArray = workingArray.filter(function (ad) {
         switch (type) {
           case 'type':
             return ad.offer.type === what;
           case 'rooms':
-            return ad.offer.rooms === what;
+            return ad.offer.rooms === parseInt(what, 10);
           case 'guests':
-            return ad.offer.guests === what;
+            return ad.offer.guests === parseInt(what, 10);
         }
         return ad.offer.type === what;
       });
     };
+
 
     var filterPrice = function (minPrice, maxPrice) {
       workingArray = workingArray.filter(function (ad) {
         return ad.offer.price >= minPrice && ad.offer.price < maxPrice;
       });
     };
-
-    switch (housingType.value) {
-      case 'flat':
-        filterSelects('type', 'flat');
-        break;
-      case 'house':
-        filterSelects('type', 'house');
-        break;
-      case 'bungalo':
-        filterSelects('type', 'bungalo');
-        break;
-    }
 
     switch (housingPrice.value) {
       case 'low':
@@ -79,31 +66,20 @@
         break;
     }
 
-    switch (housingRooms.value) {
-      case '1':
-        filterSelects('rooms', 1);
-        break;
-      case '2':
-        filterSelects('rooms', 2);
-        break;
-      case '3':
-        filterSelects('rooms', 3);
-        break;
+    if (housingType.value !== 'any') {
+      filterSelects('type', housingType.value);
     }
-
-    switch (housingGuests.value) {
-      case '1':
-        filterSelects('guests', 1);
-        break;
-      case '2':
-        filterSelects('guests', 2);
-        break;
+    if (housingRooms.value !== 'any') {
+      filterSelects('rooms', housingRooms.value);
     }
-
+    if (housingGuests.value !== 'any') {
+      filterSelects('guests', housingGuests.value);
+    }
     workingArray = filterAdFeatures(workingArray);
     window.pins.insertPins(workingArray);
     return workingArray;
   };
+
 
   var resetFilters = function () { // сброс фильтров
     housingType.value = 'any';
