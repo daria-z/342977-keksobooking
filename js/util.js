@@ -56,13 +56,12 @@
     window.adds.renderFirstNotice(); // сгенерировали скрытую основу объявления
   };
 
-  var debounce = function (fun1, fun2, array) {
+  var debounce = function (fun, arr) {
     if (lastTimeout) {
       window.clearTimeout(lastTimeout);
     }
     lastTimeout = window.setTimeout(function () {
-      fun1();
-      fun2(array);
+      fun(arr);
     }, DEBOUNCE_INTERVAL);
   };
 

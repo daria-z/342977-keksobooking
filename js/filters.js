@@ -120,36 +120,46 @@
 
   // СЛУШАТЕЛИ ФИЛЬТРОВ
   housingType.addEventListener('input', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
   housingPrice.addEventListener('input', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
   housingRooms.addEventListener('input', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
   housingGuests.addEventListener('input', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
   housingWiFi.addEventListener('click', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
   housingDishwasher.addEventListener('click', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
   housingParking.addEventListener('click', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
   housingWasher.addEventListener('click', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
 
   housingElevator.addEventListener('click', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
 
   housingConditioner.addEventListener('click', function () {
-    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
+    window.util.resetMap();
+    window.util.debounce(updateAdds, backendArr);
   });
 
   window.filters = {
