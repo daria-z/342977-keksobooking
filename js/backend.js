@@ -7,7 +7,7 @@
     body.removeChild(errorDiv);
   };
 
-  var generateRequest = function (onLoad, onError) {
+  var generateRequest = function (onLoad, onError, type) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
@@ -15,6 +15,10 @@
       switch (xhr.status) {
         case 200:
           onLoad(xhr.response);
+          if (type === 'save') {
+            window.form.successMessage.classList.remove('hidden'); // показали сообщение об успешной отправке
+            setTimeout(window.form.deleteSuccessMessage, 1500); // скрыли сообщение об успешной отправке
+          }
           break;
         case 400:
           error = 'Неверный запрос';
@@ -36,58 +40,23 @@
       onError(xhr.response);
     });
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться');
+      onError('Не удалось загрузить данные');
     });
     return xhr;
   };
 
-  var generateRequestSave = function (onLoad, onError) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', function () {
-      var error;
-      switch (xhr.status) {
-        case 200:
-          onLoad(xhr.response);
-          window.form.successMessage.classList.remove('hidden'); // показали сообщение об успешной отправке
-          setTimeout(window.form.deleteSuccessMessage, 1500); // скрыли сообщение об успешной отправке
-          break;
-        case 400:
-          error = 'Неверный запрос';
-          break;
-        case 401:
-          error = 'Пользователь не авторизован';
-          break;
-        case 404:
-          error = 'Ничего не найдено';
-          break;
-        default:
-          error = 'Статус ответа: ' + xhr.status + ' ' + xhr.statusText;
-      }
-      if (error) {
-        onError(error);
-      }
-    });
-    xhr.addEventListener('error', function () {
-      onError(xhr.response);
-    });
-    xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться');
-    });
-    return xhr;
-  };
 
   window.backend = {
     load: function (onLoad, onError) {
       var URL = 'https://js.dump.academy/keksobooking/data';
-      var xhr = generateRequest(onLoad, onError);
+      var xhr = generateRequest(onLoad, onError, 'load');
       xhr.timeout = 10000;
       xhr.open('GET', URL);
       xhr.send();
     },
     save: function (data, onLoad, onError) {
       var URL = 'https://js.dump.academy/keksobooking';
-      var xhr = generateRequestSave(onLoad, onError);
+      var xhr = generateRequest(onLoad, onError, 'save');
       xhr.timeout = 10000;
       xhr.open('POST', URL);
       xhr.send(data);

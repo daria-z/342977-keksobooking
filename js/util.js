@@ -4,6 +4,8 @@
   var START_TOP = 375;
   var START_LEFT = 570;
   var ESC_KEY = 27;
+  var DEBOUNCE_INTERVAL = 500;
+  var lastTimeout;
   var tokyoMap = document.querySelector('.map');
   var addressField = document.querySelector('#address');
 
@@ -54,6 +56,16 @@
     window.adds.renderFirstNotice(); // сгенерировали скрытую основу объявления
   };
 
+  var debounce = function (fun1, fun2, array) {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      fun1();
+      fun2(array);
+    }, DEBOUNCE_INTERVAL);
+  };
+
 
   window.util = {
     tokyoMap: tokyoMap,
@@ -62,6 +74,7 @@
     removeAllChildren: removeAllChildren,
     addTextInField: addTextInField,
     setStartCondition: setStartCondition,
-    resetMap: resetMap
+    resetMap: resetMap,
+    debounce: debounce
   };
 })();

@@ -12,7 +12,6 @@
   var pinPikeX = parseInt(mainPin.style.left, 10) - PIN_BUTTON_SIZE / 2;
   var pinPikeY = parseInt(mainPin.style.top, 10) - PIN_BUTTON_SIZE / 2;
   var pinButtonLocation = pinPikeX + ' , ' + pinPikeY;
-
   var activePin = null;
 
   // ТЕМПЛЕЙТЫ

@@ -43,23 +43,23 @@
     var photosList = adElement.querySelector('.popup__photos');
     var createFeaturesList = function () {
       window.util.removeAllChildren(featuresList); // удаляем дочерние элементы списка фич из темплейта
-      for (var j = 0; j < ad.offer.features.length; j++) { // создаем и добавляем нужное количество фич в список
+      ad.offer.features.forEach(function (el) {
         var featuresListItem = document.createElement('li');
-        featuresListItem.className = 'popup__feature popup__feature--' + ad.offer.features[j];
+        featuresListItem.className = 'popup__feature popup__feature--' + el;
         featuresList.appendChild(featuresListItem);
-      }
+      });
     };
     var createPhotosList = function () {
       window.util.removeAllChildren(photosList);
-      for (var i = 0; i < ad.offer.photos.length; i++) { // увеличили количество img до нужного числа
+      ad.offer.photos.forEach(function (el) { // увеличили количество img до нужного числа
         var onePhoto = document.createElement('img');
         photosList.appendChild(onePhoto);
         onePhoto.className = 'popup__photo';
         onePhoto.width = NOTICE_PHOTO_WIDTH;
         onePhoto.height = NOTICE_PHOTO_HEIGHT;
         onePhoto.alt = 'Фотография жилья';
-        onePhoto.src = ad.offer.photos[i];
-      }
+        onePhoto.src = el;
+      });
     };
 
     adElement.querySelector('.popup__title').textContent = ad.offer.title; // добавили заголовок из массива

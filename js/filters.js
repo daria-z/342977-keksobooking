@@ -34,70 +34,69 @@
   var updateAdds = function (data) { // фильтр по селектам
     var workingArray = data.slice();
 
+
+    var filterSelects = function (type, what) {
+      workingArray = workingArray.filter(function (ad) {
+        switch (type) {
+          case 'type':
+            return ad.offer.type === what;
+          case 'rooms':
+            return ad.offer.rooms === what;
+          case 'guests':
+            return ad.offer.guests === what;
+        }
+        return ad.offer.type === what;
+      });
+    };
+
+    var filterPrice = function (minPrice, maxPrice) {
+      workingArray = workingArray.filter(function (ad) {
+        return ad.offer.price >= minPrice && ad.offer.price < maxPrice;
+      });
+    };
+
     switch (housingType.value) {
       case 'flat':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.type === 'flat';
-        });
+        filterSelects('type', 'flat');
         break;
       case 'house':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.type === 'house';
-        });
+        filterSelects('type', 'house');
         break;
       case 'bungalo':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.type === 'bungalo';
-        });
+        filterSelects('type', 'bungalo');
         break;
     }
 
     switch (housingPrice.value) {
       case 'low':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.price < 10000;
-        });
+        filterPrice(0, 10000);
         break;
       case 'middle':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.price >= 10000 && ad.offer.price < 50000;
-        });
+        filterPrice(10000, 50000);
         break;
       case 'high':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.price > 50000;
-        });
+        filterPrice(50000, 100000000);
         break;
     }
 
     switch (housingRooms.value) {
       case '1':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.rooms === 1;
-        });
+        filterSelects('rooms', 1);
         break;
       case '2':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.rooms === 2;
-        });
+        filterSelects('rooms', 2);
         break;
       case '3':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.rooms === 3;
-        });
+        filterSelects('rooms', 3);
         break;
     }
 
     switch (housingGuests.value) {
       case '1':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.guests === 1;
-        });
+        filterSelects('guests', 1);
         break;
       case '2':
-        workingArray = workingArray.filter(function (ad) {
-          return ad.offer.guests === 2;
-        });
+        filterSelects('guests', 2);
         break;
     }
 
@@ -119,98 +118,38 @@
     housingConditioner.checked = false;
   };
 
-  var lastTimeout;
-
   // СЛУШАТЕЛИ ФИЛЬТРОВ
   housingType.addEventListener('input', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
   housingPrice.addEventListener('input', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
   housingRooms.addEventListener('input', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
   housingGuests.addEventListener('input', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
   housingWiFi.addEventListener('click', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
   housingDishwasher.addEventListener('click', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
   housingParking.addEventListener('click', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
   housingWasher.addEventListener('click', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
+
   housingElevator.addEventListener('click', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
+
   housingConditioner.addEventListener('click', function () {
-    window.util.resetMap();
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      updateAdds(backendArr);
-    }, 500);
+    window.util.debounce(window.util.resetMap, updateAdds, backendArr);
   });
 
   window.filters = {
