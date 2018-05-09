@@ -80,7 +80,6 @@
     return workingArray;
   };
 
-
   var resetFilters = function () { // сброс фильтров
     housingType.value = 'any';
     housingPrice.value = 'any';
@@ -94,46 +93,7 @@
     housingConditioner.checked = false;
   };
 
-  // СЛУШАТЕЛИ ФИЛЬТРОВ
-  housingType.addEventListener('input', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-  housingPrice.addEventListener('input', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-  housingRooms.addEventListener('input', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-  housingGuests.addEventListener('input', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-  housingWiFi.addEventListener('click', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-  housingDishwasher.addEventListener('click', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-  housingParking.addEventListener('click', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-  housingWasher.addEventListener('click', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-
-  housingElevator.addEventListener('click', function () {
-    window.util.resetMap();
-    window.util.debounce(updateAdds, backendArr);
-  });
-
-  housingConditioner.addEventListener('click', function () {
+  mapFilters.addEventListener('change', function () { // слушаем изменения фильтров
     window.util.resetMap();
     window.util.debounce(updateAdds, backendArr);
   });

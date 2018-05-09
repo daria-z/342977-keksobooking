@@ -21,16 +21,28 @@
     select2.options.selectedIndex = selectOption;
   };
 
-  formType.addEventListener('input', function () { // соответствие цены и типа жилья
-    if (formType.value === 'bungalo') {
-      changePrice('0');
-    } else if (formType.value === 'flat') {
-      changePrice('1000');
-    } else if (formType.value === 'house') {
-      changePrice('5000');
-    } else if (formType.value === 'palace') {
-      changePrice('10000');
+  var guestChecker = function () {
+    if ((formGuests.value === '0' && formRooms.value !== '100') || (formRooms.value < formGuests.value)) {
+      formGuests.valid = '';
+      formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
+    } else {
+      formGuests.valid = 'true';
+      formGuests.setCustomValidity('');
     }
+  };
+
+  formType.addEventListener('input', function () { // соответствие цены и типа жилья
+    var price = '';
+    if (formType.value === 'bungalo') {
+      price = '0';
+    } else if (formType.value === 'flat') {
+      price = '1000';
+    } else if (formType.value === 'house') {
+      price = '5000';
+    } else if (formType.value === 'palace') {
+      price = '10000';
+    }
+    changePrice(price);
   });
 
   formCheckIn.addEventListener('input', function () { // время выезда в зависимости от времени въезда
@@ -42,23 +54,11 @@
   });
 
   formGuests.addEventListener('input', function () { // соответсвие кол-ва гостей комнатам
-    if ((formGuests.value === '0' && formRooms.value !== '100') || (formRooms.value < formGuests.value)) {
-      formGuests.valid = '';
-      formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
-    } else {
-      formGuests.valid = 'true';
-      formGuests.setCustomValidity('');
-    }
+    guestChecker();
   });
 
   formRooms.addEventListener('input', function () { // соответсвие кол-ва гостей комнатам
-    if ((formGuests.value === '0' && formRooms.value !== '100') || (formRooms.value < formGuests.value)) {
-      formGuests.valid = '';
-      formGuests.setCustomValidity('Количество мест должно быть не меньше количества комнат');
-    } else {
-      formGuests.valid = 'true';
-      formGuests.setCustomValidity('');
-    }
+    guestChecker();
   });
 
   formRooms.addEventListener('input', function () { // блокировка выбора не подходящих условий
