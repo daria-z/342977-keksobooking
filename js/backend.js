@@ -1,7 +1,13 @@
 'use strict';
 
 (function () {
-  var generateRequest = function (onLoad, onError) {
+  var deleteErrorMessage = function () { // удаление сообщения об ошибке
+    var body = document.querySelector('body');
+    var errorDiv = document.querySelector('.errorMessage');
+    body.removeChild(errorDiv);
+  };
+
+  var generateRequest = function (onLoad, onError, type) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.addEventListener('load', function () {
@@ -9,6 +15,10 @@
       switch (xhr.status) {
         case 200:
           onLoad(xhr.response);
+          if (type === 'save') {
+            window.form.successMessage.classList.remove('hidden'); // показали сообщение об успешной отправке
+            setTimeout(window.form.deleteSuccessMessage, 1500); // скрыли сообщение об успешной отправке
+          }
           break;
         case 400:
           error = 'Неверный запрос';
@@ -30,28 +40,30 @@
       onError(xhr.response);
     });
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться');
+      onError('Не удалось загрузить данные');
     });
     return xhr;
   };
 
+
   window.backend = {
     load: function (onLoad, onError) {
       var URL = 'https://js.dump.academy/keksobooking/data';
-      var xhr = generateRequest(onLoad, onError);
+      var xhr = generateRequest(onLoad, onError, 'load');
       xhr.timeout = 10000;
       xhr.open('GET', URL);
       xhr.send();
     },
     save: function (data, onLoad, onError) {
       var URL = 'https://js.dump.academy/keksobooking';
-      var xhr = generateRequest(onLoad, onError);
+      var xhr = generateRequest(onLoad, onError, 'save');
       xhr.timeout = 10000;
       xhr.open('POST', URL);
       xhr.send(data);
     },
     onErrorMessage: function (errorMessage) {
       var node = document.createElement('div');
+      node.classList.add('errorMessage');
       node.style.zIndex = 100;
       node.style.width = '50%';
       node.style.transform = 'translateX(-50%) translateY(-50%)';
@@ -65,6 +77,7 @@
       node.style.fontSize = '28px';
       node.textContent = errorMessage;
       document.body.insertAdjacentElement('afterbegin', node);
+      setTimeout(deleteErrorMessage, 1500);
     }
   };
 })();
